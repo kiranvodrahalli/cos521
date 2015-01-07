@@ -10,7 +10,7 @@ class NaiveTrendPredictor:
         with open(data_file) as f:
             for line in f:
                 try:
-                    id, timestamp, hashtag = line.strip().split(',')
+                    id_, timestamp, hashtag = line.strip().split(',')
                     tweet_dt = parser.parse(timestamp)
                 except Exception, e:
                     print e
