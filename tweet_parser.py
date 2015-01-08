@@ -18,7 +18,7 @@ def parse_tweet_file(tweet_file):
                     tweet_id = unicode(tweet['id'])
                     tweet_timestamp = tweet['created_at']
                     tag_tokens = tweet['text'].strip().split('#')[1:]
-                    tags = [token.split()[0].rstrip('?:!.,;') for token in tag_tokens]
+                    tags = [token.split()[0].rstrip('?:!.,;') for token in tag_tokens if token]
                     for tag in tags:
                         out_f.write(','.join([tweet_id, tweet_timestamp, tag+'\n']))
 
