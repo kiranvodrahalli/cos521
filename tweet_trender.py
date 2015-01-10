@@ -10,13 +10,6 @@ import key_functions
 
 
 
-class Hokusai:
-
-	def __init__(blah):
-		return 'lol'
-
-
-
 class SmartTrendPredictor:
 	# update the hashtag frequency dict and heap data structures
 	# new_data is in the format (hashtag, timestamp)

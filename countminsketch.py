@@ -7,6 +7,23 @@ import hashlib
 import array
 
 
+# to note: take the min: we get a lower bound; taking max we would get upper bound
+
+# what happens to the case when we have something we've never seen before, but it
+# hashes? how is performance affected here?
+
+# modify to take into account the ter "b" -- as in M_b
+# for different locations in time, or whatever?
+
+# we can compress time intervals together into one count min sketch (with less accuracy)
+# as we go further into the past, so that we don't need to maintain all of it
+# (we still retain approximate counts, we just push them together)
+
+# resolution means "the amount of time for which we are counting the data"
+# 2^m minute resolution means that we're keeping approximate frequency counts
+# for 2^m minutes 
+
+
 class CountMinSketch(object):
     """
     A class for counting hashable items using the Count-min Sketch strategy.
