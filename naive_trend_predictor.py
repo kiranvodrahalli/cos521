@@ -22,7 +22,7 @@ class NaiveTrendPredictor:
         hashtag_grps = (self.inverted_tweets_idx[tweet_dt]
                         for tweet_dt in self.inverted_tweets_idx
                         if start_dt <= tweet_dt and tweet_dt <= end_dt)
-        most_popular = {(len(self.tweets[hashtag]), hashtag)
+        most_popular = {(sum((start_dt <= tweet_dt and tweet_dt <= end_dt) for tweet_dt in self.tweets[hashtag]), hashtag)
                         for hashtag_grp in hashtag_grps
                         for hashtag in hashtag_grp}
         return list(itertools.islice(reversed(sorted(most_popular)), 0, n))
