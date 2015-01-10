@@ -2,9 +2,19 @@
 # Algorithm Implementation 
 
 import fib_heap as fh
+from countminsketch as CountMinSketch
 from collections import default_dict
 
 import key_functions
+
+
+
+
+class Hokusai:
+
+	def __init__(blah):
+		return 'lol'
+
 
 
 class SmartTrendPredictor:
