@@ -1,6 +1,7 @@
 ## DOWNLOADED FROM 
 ## https://github.com/rafacarrascosa/countminsketch
 ## (available on pip)
+## MODIFIED BY KIRAN VODRAHALLI for purposes of hokusai
 
 # -*- coding: utf-8 -*-
 import hashlib
@@ -15,13 +16,6 @@ import array
 # modify to take into account the ter "b" -- as in M_b
 # for different locations in time, or whatever?
 
-# we can compress time intervals together into one count min sketch (with less accuracy)
-# as we go further into the past, so that we don't need to maintain all of it
-# (we still retain approximate counts, we just push them together)
-
-# resolution means "the amount of time for which we are counting the data"
-# 2^m minute resolution means that we're keeping approximate frequency counts
-# for 2^m minutes 
 
 
 class CountMinSketch(object):
@@ -54,6 +48,9 @@ class CountMinSketch(object):
     possible to "count apples" and then "ask for oranges". Validation is up to
     the user.
     """
+    # make m, d accessible
+    m = 0
+    d = 0
 
     def __init__(self, m, d):
         """ `m` is the size of the hash tables, larger implies smaller
@@ -70,6 +67,17 @@ class CountMinSketch(object):
         for _ in xrange(d):
             table = array.array("l", (0 for _ in xrange(m)))
             self.tables.append(table)
+
+
+    # expose the internal array to update for purposes of addition
+    # - Kiran 
+    # update table i, index j
+    # i in [0, m); j in [0, d)
+    def update(self, i, j, new_val):
+        self.tables[i][j] = new_val
+    # get val at i j
+    def val_at(self, i, j):
+        return self.tables[i][j]
 
     def _hash(self, x):
         md5 = hashlib.md5(str(hash(x)))

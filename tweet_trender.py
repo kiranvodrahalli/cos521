@@ -2,11 +2,17 @@
 # Algorithm Implementation 
 
 import fib_heap as fh
-from countminsketch as CountMinSketch
 from collections import default_dict
 
 import key_functions
 
+# when parsing tweets, need to make sure 
+# the tweet sending model (from file)
+# takes into account times. 
+
+# (so we fake the time sending, basically)
+# (if we want to actually implement realtime,
+#  need a time counter while getting tweets)
 
 
 
