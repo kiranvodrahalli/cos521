@@ -3,7 +3,7 @@
 
 import fib_heap as fh
 from collections import default_dict
-
+import history as h
 import key_functions
 
 # when parsing tweets, need to make sure 
