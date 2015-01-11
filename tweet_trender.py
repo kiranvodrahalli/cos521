@@ -16,7 +16,7 @@ import key_functions
 
 
 # this is being run on FILES of previous twitter data
-# with (time, hashtag) format
+# with (hashtag, timestamp) format
 # that's why we use the timestamp to calculate time
 # instead of actual time as we would if it were real-time
 class SmartTrendPredictor:
@@ -130,6 +130,7 @@ class SmartTrendPredictor:
 	                if isFirstLine:
 	                	self.end_of_last_block = timestamp
 	                	isFirstLine = False
+	               		update_datastructs((hashtag, timestamp))
 	            except Exception, e:
 	                print e
 	                continue
