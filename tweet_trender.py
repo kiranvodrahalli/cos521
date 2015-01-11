@@ -43,34 +43,43 @@ class SmartTrendPredictor:
 		# diff should be an integer in seconds, maybe
 		diff = process_time_diff(self.end_of_last_block, timestamp)
 		# aggregate only for every block timeunit
-		if diff >= self.threshold:
-			self.hist.aggregate_unit(self.data_block)
-			self.data_block = []
-			self.end_of_last_block = timestamp
-		else: #otherwise, update
-			self.data_block.append(hashtag)
 
+		if diff < self.threshold: #otherwise, update
+			self.data_block.append(hashtag)
+			# somehow need to update A here? (self.present)
+			# change paradigm from block 
 
 		if hashtag in self.hashtag_freq:
 			# update the frequency
 			curr_freq = self.hashtag_freq[hashtag][0]
 			curr_freq += 1
-			self.hashtag_freq[hashtag][0] = curr_freq
+			self.hashtag_freq[hashtag][0] = curr_freq	
 
 			# get the ptr and update the heap 
 			ptr = self.hashtag_freq[hashtag][1]
 			entry = self.heap_ptrs[ptr]
-			new_priority = (curr_freq + 0.0)/ self.hist.query(hashtag)
+			# negative since we're using a min heap	
+
+			# NEED TO AVOID INFINITY HERE
+			new_priority = (-1)*(curr_freq + 0.0)/ self.hist.query(hashtag)
 			self.heap.decrease_key(entry, new_priority)
 		else:
 			# build the ptr to the heap
-			priority = 1./self.hist.query(hashtag)
+			# negative since we have a min heap
+			# NEED TO AVOID INFINITY HERE
+			priority = (-1)*1./self.hist.query(hashtag)
 			ptr_val = self.heap.enqueue(hashtag, priority)
 			self.heap_ptrs[self.curr_index] = ptr_val
 			# build hashtag_freq entry
 			self.hashtag_freq[hashtag] = [1, self.curr_index]
 			# new pointer
 			self.curr_index += 1
+
+		if diff >= self.threshold:
+			self.hist.aggregate_unit(self.data_block)
+			self.data_block = []
+			self.end_of_last_block = timestamp
+			# update all other structs
 
 	def __init__(self, data_file):
 
@@ -136,6 +145,20 @@ class SmartTrendPredictor:
 	                continue
 	            self.tweets[hashtag.lower()].append(tweet_dt)
 	            self.inverted_tweets_idx[tweet_dt].append(hashtag.lower())
+
+	def get_topk_hashtags(self, k):
+		# what we will return
+		# list of entries (have priority and value)
+		best_nodes = []
+		for i in range(k):
+			best_nodes.append(self.heap.dequeue_min())
+		# put them back 
+		for node in best_nodes:
+			self.heap.enqueue(node.get_value(), node.get_priority())
+		for i in range(len(best_nodes)):
+			# remember our priorities are negative to turn min heap into max heap
+			print 'Priority: ' + str(-1*node.get_priority()) + '\t' + str(node.get_value()) + ' is the ' + str(i) + ' top node.\n'
+		return best_nodes
 
 
 
