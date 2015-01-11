@@ -65,7 +65,10 @@ class CountMinSketch(object):
         self.n = 0
         self.tables = []
         for _ in xrange(d):
-            table = array.array("l", (0 for _ in xrange(m)))
+            # KIRAN'S EDIT: change "l" to "f" -- we want to allow
+            # float values since we use it to also maintain
+            # weighted counts (and still want to use the min procedure)
+            table = array.array("f", (0 for _ in xrange(m)))
             self.tables.append(table)
 
 
