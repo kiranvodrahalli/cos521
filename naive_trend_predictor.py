@@ -2,6 +2,8 @@ from collections import defaultdict
 import itertools
 from dateutil import parser
 
+TRENDING_THRESHOLD = 50
+
 class NaiveTrendPredictor:
     def __init__(self, data_file):
         self.tweets = defaultdict(list)
@@ -51,7 +53,8 @@ class NaiveTrendPredictor:
         cur_freq_counts = {hashtag: self.get_hashtag_freq(hashtag, start_dt, end_dt)
                            for hashtag in cur_hashtags}
 
-        most_novel = (((cur_freq_counts[hashtag] + 1.0)/(prev_freq_counts.get(hashtag, 0) + len(prev_freq_counts)), hashtag)
+        most_novel = (((cur_freq_counts[hashtag] + 1.0)/
+                       (prev_freq_counts.get(hashtag, 0) + TRENDING_THRESHOLD), hashtag)
                       for hashtag in cur_freq_counts)
 
         return list(itertools.islice(reversed(sorted(most_novel)), 0, n))
