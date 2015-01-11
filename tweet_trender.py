@@ -129,6 +129,7 @@ class SmartTrendPredictor:
 	                tweet_dt = parser.parse(timestamp)
 	                if isFirstLine:
 	                	self.end_of_last_block = timestamp
+	                	isFirstLine = False
 	            except Exception, e:
 	                print e
 	                continue
