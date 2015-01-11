@@ -5,6 +5,7 @@ import fib_heap as fh
 from collections import default_dict
 import history as h
 import key_functions
+from dateutil import parser
 
 # when parsing tweets, need to make sure 
 # the tweet sending model (from file)
@@ -20,6 +21,7 @@ import key_functions
 # that's why we use the timestamp to calculate time
 # instead of actual time as we would if it were real-time
 class SmartTrendPredictor:
+	'''
 	# time_str is in format hh:mm:ss
 	# IMPORTANT: time_str1 < time_str2 in time
 	def process_time_diff(time_str1, time_str2):
@@ -33,21 +35,31 @@ class SmartTrendPredictor:
 		timetot1 = hr1*60*60 + m1*60 + s1
 		timetot2 = hr2*60*60 + m2*60 + s2
 		return timetot2 - timetot1
+	'''
 
 	# update the hashtag frequency dict and heap data structures
 	# new_data is in the format (hashtag, timestamp)
 	def update_datastructs(self, new_data):
-		hashtag, timestamp = new_data
+		hashtag, curr_dt = new_data
+		#curr_dt = parser.parse(timestamp)
 		# update the history
 		# check timestamp and stuff to build current datablocks
 		# diff should be an integer in seconds, maybe
-		diff = process_time_diff(self.end_of_last_block, timestamp)
-		# aggregate only for every block timeunit
+		diff = curr_dt - self.end_of_last_block
 
-		if diff < self.threshold: #otherwise, update
+		# aggregate only for every block timeunit
+		if diff > self.block_threshold:
+			self.hist.aggregate_unit(self.data_block)
+			self.data_block = []
+			self.end_of_last_block = curr_dt
+			# update all other structs
+		else:
 			self.data_block.append(hashtag)
-			# somehow need to update A here? (self.present)
-			# change paradigm from block 
+			# update the present structure in hist
+			# don't worry, this will get cleared when
+			# we add the whole block, and get re-added from the start
+			self.hist.update_present_only(hashtag)
+
 
 		if hashtag in self.hashtag_freq:
 			# update the frequency
@@ -60,13 +72,13 @@ class SmartTrendPredictor:
 			entry = self.heap_ptrs[ptr]
 			# negative since we're using a min heap	
 
-			# NEED TO AVOID INFINITY HERE
+			# query value should never be 0
 			new_priority = (-1)*(curr_freq + 0.0)/ self.hist.query(hashtag)
 			self.heap.decrease_key(entry, new_priority)
 		else:
 			# build the ptr to the heap
 			# negative since we have a min heap
-			# NEED TO AVOID INFINITY HERE
+			# query value should never be 0
 			priority = (-1)*1./self.hist.query(hashtag)
 			ptr_val = self.heap.enqueue(hashtag, priority)
 			self.heap_ptrs[self.curr_index] = ptr_val
@@ -75,11 +87,6 @@ class SmartTrendPredictor:
 			# new pointer
 			self.curr_index += 1
 
-		if diff >= self.threshold:
-			self.hist.aggregate_unit(self.data_block)
-			self.data_block = []
-			self.end_of_last_block = timestamp
-			# update all other structs
 
 	def __init__(self, data_file):
 
@@ -91,7 +98,7 @@ class SmartTrendPredictor:
 
 		# number of seconds in a day
 		# a day is a block, can modify this
-		self.threshold = 60*60*24
+		self.block_threshold = 60*60*24
 
 		self.tweets = defaultdict(list)
 		self.inverted_tweets_idx = defaultdict(list)
@@ -128,7 +135,7 @@ class SmartTrendPredictor:
 		# first line bool
 		isFirstLine = True
 		# string of the time the last block ended at - we take times with reference to that
-		self.end_of_last_block = ''
+		self.end_of_last_block = None
 
 		# not finished
 		with open(data_file) as f:
@@ -137,9 +144,10 @@ class SmartTrendPredictor:
 	                id_, timestamp, hashtag = line.strip().split(',')
 	                tweet_dt = parser.parse(timestamp)
 	                if isFirstLine:
-	                	self.end_of_last_block = timestamp
+	                	# 'last block' starts at the beginning of the file
+	                	self.end_of_last_block = tweet_dt
 	                	isFirstLine = False
-	               		update_datastructs((hashtag, timestamp))
+	               	update_datastructs((hashtag, tweet_dt))
 	            except Exception, e:
 	                print e
 	                continue

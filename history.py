@@ -98,6 +98,12 @@ class History(object):
 		for i in range(n):
 			self.cm_sketch_list.append(CMSketch(m, d))
 
+	def update_present_only(self, datum):
+		self.ready = False
+		# don't update the full time
+		# this is a sub-unit update
+		self.present.add(datum, 1)
+
 	# data_block is a block of data, presented as an iterable object
 	# the block of data consists of data that arrived in a single time unit
 	# implements algorithm 2 from the paper
@@ -123,6 +129,10 @@ class History(object):
 		# data structure with the exact frequencies that we can
 		# query for exact frequencies. 
 		# with frequency 1 for each appearance
+
+		# reset the present when we aggregate the whole thing
+		self.present = CMSketch(self.m, self.d)
+		# (data_block is the present)
 		for data in data_block:
 			accumulator.add(data, 1)
 			# update present as we update the accumulator
