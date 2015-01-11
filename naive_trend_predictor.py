@@ -2,7 +2,7 @@ from collections import defaultdict
 import itertools
 from dateutil import parser
 
-TRENDING_THRESHOLD = 50
+TRENDING_THRESHOLD = 25
 
 class NaiveTrendPredictor:
     def __init__(self, data_file):
@@ -31,12 +31,12 @@ class NaiveTrendPredictor:
 
 
     def get_hashtag_freq(self, hashtag, start_dt, end_dt):
-        return sum(start_dt <= tweet_dt and tweet_dt <= end_dt
-                   for tweet_dt in self.tweets[hashtag])
+        return sum(1 for tweet_dt in self.tweets[hashtag]
+                   if start_dt <= tweet_dt and tweet_dt <= end_dt)
 
 
     def get_most_popular(self, n, start_dt, end_dt):
-        hashtags = self.get_hashtags(start_dt, end_dt)
+        hashtags = set(self.get_hashtags(start_dt, end_dt))
         most_popular = {(self.get_hashtag_freq(hashtag, start_dt, end_dt), hashtag)
                         for hashtag in hashtags}
         return list(itertools.islice(reversed(sorted(most_popular)), 0, n))
@@ -45,8 +45,8 @@ class NaiveTrendPredictor:
     def get_most_novel(self, n, start_dt, end_dt):
         prev_start_dt = start_dt - (end_dt - start_dt)
 
-        prev_hashtags = self.get_hashtags(prev_start_dt, start_dt)
-        cur_hashtags = self.get_hashtags(start_dt, end_dt)
+        prev_hashtags = set(self.get_hashtags(prev_start_dt, start_dt))
+        cur_hashtags = set(self.get_hashtags(start_dt, end_dt))
 
         prev_freq_counts = {hashtag: self.get_hashtag_freq(hashtag, prev_start_dt, start_dt)
                             for hashtag in prev_hashtags}

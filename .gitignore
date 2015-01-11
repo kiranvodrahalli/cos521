@@ -1,2 +1,2 @@
 config
-countminsketch.pyc fib_heap.pyc history.pyc naive_trend_predictor.pyc tweet_trender.pyc
+*.pyc
