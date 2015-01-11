@@ -3,6 +3,7 @@
 
 import fib_heap as fh
 from collections import default_dict
+from collections import deque
 import history as h
 import key_functions
 from dateutil import parser
@@ -52,7 +53,7 @@ class SmartTrendPredictor:
 			self.hist.aggregate_unit(self.data_block)
 			self.data_block = []
 			self.end_of_last_block = curr_dt
-			# update all other structs
+
 		else:
 			self.data_block.append(hashtag)
 			# update the present structure in hist
@@ -60,7 +61,7 @@ class SmartTrendPredictor:
 			# we add the whole block, and get re-added from the start
 			self.hist.update_present_only(hashtag)
 
-
+		# update all other structs
 		if hashtag in self.hashtag_freq:
 			# update the frequency
 			curr_freq = self.hashtag_freq[hashtag][0]
@@ -87,6 +88,36 @@ class SmartTrendPredictor:
 			# new pointer
 			self.curr_index += 1
 
+		# update the queue
+		# (appending to the right, most recent)
+		self.input_queue.append(new_data)
+
+		# check first thing in the queue (left)
+		# while the time of the element of the
+		# queue + y is less than current time
+		# (that means it's too old)
+		# remove it from the "current" data structures
+		# (the heap, the freq hashtable, the queue)
+		# (since we delete from the left, the index to look at is always 0)
+		while self.input_queue[0][1] + self.y_res < curr_dt:
+			hashtag_old, old_dt = self.input_queue.popleft()
+			new_freq = self.hashtag_freq[hashtag_old][0] - 1
+			if new_freq > 0:
+				# update hashtag frequency table
+				self.hashtag_freq[hashtag_old][0] = new_freq
+				# update heap 
+				ptr = self.hashtag_freq[hashtag_old][1]
+				entry = self.heap_ptrs[ptr]
+				new_priority = (-1) * (new_freq + 0.0) / self.hist.query(hashtag_old)
+				self.heap.decrease_key(entry, new_priority)
+			else:
+				ptr = self.hashtag_freq[hashtag_old][1]
+				# delete the pointer to this entry from the heap, since its frequency is 0
+				self.heap.delete(ptr)
+				# delete the entry from the hashtable
+				del self.hashtag_freq[hashtag_old]
+
+
 
 	def __init__(self, data_file):
 
@@ -98,18 +129,26 @@ class SmartTrendPredictor:
 
 		# number of seconds in a day
 		# a day is a block, can modify this
+		# this is for the history datastructure
 		self.block_threshold = 60*60*24
+		# datetime of the time the last block ended at - we take times with reference to that
+		self.end_of_last_block = None
+		# 3 hours for now
+		# the resolution of the heap/ frequency hash table
+		self.y_res = 60*60*3
 
 		self.tweets = defaultdict(list)
 		self.inverted_tweets_idx = defaultdict(list)
 
 		# current tweet storage
 
-		'''
+		
 		# queue for holding hashtags from the stream
 		# (hashtag, timestamp pairs)
-		self.input_queue = []
-		'''
+		# the right is the most recent
+		# the left is the oldest
+		self.input_queue = deque()
+		
 		# map from hashtag to (frequency, ptr to heap) pairs
 		# holds hashtags from the last y minutes
 		self.hashtag_freq = dict()
@@ -133,9 +172,9 @@ class SmartTrendPredictor:
 		self.hist = h.History(10, 1000, 100)
 
 		# first line bool
+		# used for checking if its the first line in the file
+		# when we parse the file
 		isFirstLine = True
-		# string of the time the last block ended at - we take times with reference to that
-		self.end_of_last_block = None
 
 		# not finished
 		with open(data_file) as f:
@@ -144,8 +183,9 @@ class SmartTrendPredictor:
 	                id_, timestamp, hashtag = line.strip().split(',')
 	                tweet_dt = parser.parse(timestamp)
 	                if isFirstLine:
-	                	# 'last block' starts at the beginning of the file
+	                	# 'last blocks' start at the beginning of the file
 	                	self.end_of_last_block = tweet_dt
+	                	self.end_of_last_y_block = tweet_dt
 	                	isFirstLine = False
 	               	update_datastructs((hashtag, tweet_dt))
 	            except Exception, e:
