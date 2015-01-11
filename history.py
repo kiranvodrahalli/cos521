@@ -80,6 +80,10 @@ class History(object):
 		# present is a count-min sketch containing
 		# sub-unit time counts of indexes. 
 		self.present = CMSketch(m, d)
+		# ready is a t/f value to determine whether or not
+		# to use the present as a score while the aggregate weighted score
+		# is being computed
+		self.ready = False
 		# use a CM-sketch to keep track of aggregate weighted score
 		# A = sum{j = 1 to log T} (M^j / 2^j)
 		# (we add the present ourselves)
@@ -124,6 +128,7 @@ class History(object):
 			# update present as we update the accumulator
 			self.present.add(data, 1)
 
+		self.ready = False
 		# we update the whole structure with M_bar
 		# we calculate l: 
 		# l = max over all i such that (t mod 2^i) == 0
@@ -140,26 +145,29 @@ class History(object):
 		# go up to the index that is find_l + 1, or the max index
 		# if find_l + 1 >= to it
 		for i in range(min(find_l(self.t) + 1, self.n)):
+			# now we want to add the appropriate value: A + 1/2^(i)(M_bar - M^j)
+			# M_bar - M^j
+			difference = sketch_sum(accumulator, sketch_scalar_product(self.cm_sketch_list[i], -1))
+			# A = A + (1/2)^i difference
+			self.aggregate_score = sketch_sum(self.aggregate_score, 
+									sketch_scalar_product(difference, pow(0.5, i)))
 			# temporary storage
 			T = deepcopy(accumulator)
 			# aggregate into accumulator for next round
 			accumulator = sketch_sum(accumulator, self.cm_sketch_list[i])
 			# set the value
 			self.cm_sketch_list[i] = T
-			# now we want to add the appropriate value of T multiplied by a factor of 1/2^(i + 1)
-			self.aggregate_score = sketch_sum(self.aggregate_score, sketch_scalar_product(T, pow(0.5, (i + 1))))
+		# now we're ready to use CM-sketch values
+		self.ready = True
 		# reset the present now that we're done with one time block
 		self.present = CMSketch(self.m, self.d)
 
-
-	# CURRENTLY THERE IS A MISMATCH BETWEEN THE TWO-- BUG
-	
 	# we want to put these values into its own count-min sketch, (call it A)
 	# updated in sync so as to not waste log T time summing
 	# for each query.
 	# this value will provide a key for our heap
 	def query_slow(self, x):
-		return self.present.query(x) + sum(pow(0.5, (i + 1)) * self.cm_sketch_list[i].query(x) for i in range(self.n))
+		return self.present.query(x) + sum(pow(0.5, i) * self.cm_sketch_list[i].query(x) for i in range(self.n))
 
 	# using a CMSketch to keep track of the score
 	# note that we stored the 'scores' we calculated in CM-sketch
@@ -167,7 +175,10 @@ class History(object):
 	# this is exactly equivalent to doing the sum over the minimums since we added termwise
 	# (used matrix addition and scalar multiplication)
 	def query(self, x):
-		return self.present.query(x) + self.aggregate_score.query(x)
+		if self.ready:
+			return self.aggregate_score.query(x)
+		else: # only if we're not ready 
+			return self.present.query(x)
 
 
 # test the history functions
@@ -182,14 +193,15 @@ def test():
 	terms = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p']
 	h = History(5, 10, 30)
 	for i in range(len(ds)):
+		print '======================================'
+		print 'Added Data #' + str(i)
 		h.aggregate_unit(ds[i])
-		term_str = ''
 		for term in terms:
-			if h.query(term) != 0.0:
-				term_str += '(' + str(h.query(term)) + "|" + str(h.query_slow(term)) + ')'
-			else:
-				term_str += '()'
-		print term_str
+			print 'Term: ' + str(term)
+			print 'Slow Query: ' + str(h.query_slow(term))
+			print 'Query: ' + str(h.query(term))
+			print '--------------------------'
+		
 
 
 
