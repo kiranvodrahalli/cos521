@@ -151,6 +151,9 @@ class History(object):
 		# reset the present now that we're done with one time block
 		self.present = CMSketch(self.m, self.d)
 
+
+	# CURRENTLY THERE IS A MISMATCH BETWEEN THE TWO-- BUG
+	
 	# we want to put these values into its own count-min sketch, (call it A)
 	# updated in sync so as to not waste log T time summing
 	# for each query.

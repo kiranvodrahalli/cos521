@@ -15,12 +15,40 @@ import key_functions
 #  need a time counter while getting tweets)
 
 
-
+# this is being run on FILES of previous twitter data
+# with (time, hashtag) format
+# that's why we use the timestamp to calculate time
+# instead of actual time as we would if it were real-time
 class SmartTrendPredictor:
+	# time_str is in format hh:mm:ss
+	# time_str1 comes before time_str2 in time
+	# HAVE NOT HANDLED CASE WHERE WE CROSS DAYS
+	# OR HOURS
+	# OR MINUTES
+	def process_time_diff(time_str1, time_str2):
+		times1 = time_str1.split(':')
+		times2 = time_str2.split(':')
+		del_s = int(times2[2]) - int(times1[2])
+		del_min = int(times2[1]) - int(times1[1])
+		del_hr = int(times2[0]) - int(times1[0])
+		return (del_hr, del_min, del_s)
 	# update the hashtag frequency dict and heap data structures
 	# new_data is in the format (hashtag, timestamp)
-	def update_datastructs(new_data):
+	def update_datastructs(self, new_data):
 		hashtag, timestamp = new_data
+		# update the history
+		# check timestamp and stuff to build current datablocks
+		# diff should be an integer in seconds, maybe
+		diff = process_time_diff(self.end_of_last_block, timestamp)
+		# aggregate only for every block timeunit
+		if diff >= self.threshold:
+			self.hist.aggregate_unit(self.data_block)
+			self.data_block = []
+			self.end_of_last_block = timestamp
+		else: #otherwise, update
+			self.data_block.append(hashtag)
+
+
 		if hashtag in self.hashtag_freq:
 			# update the frequency
 			curr_freq = self.hashtag_freq[hashtag][0]
@@ -30,11 +58,11 @@ class SmartTrendPredictor:
 			# get the ptr and update the heap 
 			ptr = self.hashtag_freq[hashtag][1]
 			entry = self.heap_ptrs[ptr]
-			new_priority = (curr_freq + 0.0)/ self.hokusai[hashtag]
+			new_priority = (curr_freq + 0.0)/ self.hist.query(hashtag)
 			self.heap.decrease_key(entry, new_priority)
 		else:
 			# build the ptr to the heap
-			priority = 1./self.hokusai[hashtag]
+			priority = 1./self.hist.query(hashtag)
 			ptr_val = self.heap.enqueue(hashtag, priority)
 			self.heap_ptrs[self.curr_index] = ptr_val
 			# build hashtag_freq entry
@@ -43,10 +71,19 @@ class SmartTrendPredictor:
 			self.curr_index += 1
 
 	def __init__(self, data_file):
+
+		# maintains list of hashtags
+		# that have occurred in the past time unit
+		# (say, 1 day -- can fix this however we want)
+		# it's set to zero again after it gets added to history
+		self.data_block = []
+
+		# number of seconds in a day
+		# a day is a block, can modify this
+		self.threshold = 60*60*24
+
 		self.tweets = defaultdict(list)
 		self.inverted_tweets_idx = defaultdict(list)
-
-
 
 		# current tweet storage
 
@@ -73,13 +110,23 @@ class SmartTrendPredictor:
 		self.heap_ptrs = defaultdict(lambda:None)
 
 		# Hokusai data structure 
-		self.hokusai = 0
+		# pick some parameters here
+		# n = 10, m = 1000 (size of hash tables), d = 100 (# of tables)
+		self.hist = h.History(10, 1000, 100)
 
+		# first line bool
+		isFirstLine = True
+		# string of the time the last block ended at - we take times with reference to that
+		self.end_of_last_block = ''
+
+		# not finished
 		with open(data_file) as f:
 			for line in f:
 				try:
 	                id_, timestamp, hashtag = line.strip().split(',')
 	                tweet_dt = parser.parse(timestamp)
+	                if isFirstLine:
+	                	self.end_of_last_block = timestamp
 	            except Exception, e:
 	                print e
 	                continue
