@@ -21,17 +21,19 @@ import key_functions
 # instead of actual time as we would if it were real-time
 class SmartTrendPredictor:
 	# time_str is in format hh:mm:ss
-	# time_str1 comes before time_str2 in time
-	# HAVE NOT HANDLED CASE WHERE WE CROSS DAYS
-	# OR HOURS
-	# OR MINUTES
+	# IMPORTANT: time_str1 < time_str2 in time
 	def process_time_diff(time_str1, time_str2):
 		times1 = time_str1.split(':')
 		times2 = time_str2.split(':')
-		del_s = int(times2[2]) - int(times1[2])
-		del_min = int(times2[1]) - int(times1[1])
-		del_hr = int(times2[0]) - int(times1[0])
-		return (del_hr, del_min, del_s)
+		hr1, hr2, m1, m2, s1, s2 = times1[0], times2[0], times1[1], times2[1], times1[2], times2[2]
+		# in seconds
+		time_diff = 0
+		if hr1 > hr2: # only possible between 11 pm and 12 am, since we're on 24 hour clock
+			hr2 += 24
+		timetot1 = hr1*60*60 + m1*60 + s1
+		timetot2 = hr2*60*60 + m2*60 + s2
+		return timetot2 - timetot1
+
 	# update the hashtag frequency dict and heap data structures
 	# new_data is in the format (hashtag, timestamp)
 	def update_datastructs(self, new_data):
