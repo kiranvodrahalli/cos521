@@ -27,14 +27,42 @@ http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6137387&tag=1
 (this is the closest we could find)
 (to the best of our knowledge, this work has not been done before)
 
+to note: our goal was to make a real time query algorithm that USES
+the history (in condensed form) to help understand current time 
+we're remembering the past with less accuracy to save space (realistic model)
+in order to get good estimates of present trending
+
+this means we are not trying to query the past the way Hokusai is.
+
 how did we approach it 
 overview
 
 data structures
+description
+-- fib heap
+-- queue
+-- frequency hash table
+-- History (own subsection)
 
 algorithms
-clean up algorithm section
-- make sure changes in implementation are reflected in algorithm
+description
+- make sure changes in implementation are reflected in algorithm 
+-- querying the (History)
+-- updating the data structure
+------ adding to the data structure
+----------- frequency hash table update/ heap update / (update history every time block - mention why we can add, etc, some of the theory from the Hokusai paper)
+------ removing from the data structure (our snapshot of the present)
+----------- every time unit of the present, we remove outdated frequencies
+-- top k hashtags (real time)
+
+runtime analysis
+space analysis
+accuracy analysis
+
+design choices for data structure
+-- data structure modification (History vs Hokusai)
+-- fibonacci heap 
+-- heap key function 
 
 justification
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2013.4.19)  7 JAN 2015 11:57
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2013.4.19)  12 JAN 2015 13:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -142,7 +142,7 @@ Package: amsthm 2004/08/06 v2.20
 )
 \c@claim=\count108
 
-No file 521_project_paper.aux.
+(./521_project_paper.aux)
 \openout1 = `521_project_paper.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
@@ -158,7 +158,35 @@ LaTeX Font Info:    ... okay on input line 10.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 10.
 LaTeX Font Info:    ... okay on input line 10.
 
-LaTeX Warning: Reference `Hokusai' on page 1 undefined on input line 36.
+! Missing $ inserted.
+<inserted text> 
+                $
+l.26 http://ieeexplore.ieee.org/xpls/abs_
+                                         all.jsp?arnumber=6137387&tag=1
+? 
+! Misplaced alignment tab character &.
+l.26 ...eee.org/xpls/abs_all.jsp?arnumber=6137387&
+                                                  tag=1
+? 
+! Missing $ inserted.
+<inserted text> 
+                $
+l.29 
+     
+? 
+
+Overfull \hbox (57.05025pt too wide) in paragraph at lines 21--29
+\OT1/cmr/m/n/12 spe-cific twit-ter trend-ing work: ? http://ieeexplore.ieee.org
+/xpls/abs$[]\OML/cmm/m/it/12 ll:jsp\OT1/cmr/m/n/12 ?\OML/cmm/m/it/12 arnumber \
+OT1/cmr/m/n/12 =
+ []
+
+
+Overfull \hbox (153.99063pt too wide) in paragraph at lines 21--29
+\OT1/cmr/m/n/12 6137387\OML/cmm/m/it/12 tag \OT1/cmr/m/n/12 = 1(\OML/cmm/m/it/1
+2 thisistheclosestwecouldfind\OT1/cmr/m/n/12 )(\OML/cmm/m/it/12 tothebestofourk
+nowledge; thisworkhasnotbeendonebefore\OT1/cmr/m/n/12 )$ 
+ []
 
 [1
 
@@ -170,42 +198,32 @@ Missing character: There is no ‚ in font cmr8!
 Missing character: There is no Å in font cmr8!
 Missing character: There is no ° in font cmr8!
 
+[2]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 130.
 
-LaTeX Warning: Reference `Correct' on page 2 undefined on input line 40.
-
-
-LaTeX Warning: Reference `alg1' on page 2 undefined on input line 54.
-
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 67.
-(/usr/local/texlive/2012/texmf-dist/tex/latex/base/omscmr.fd
+ (/usr/local/texlive/2012/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 67.
- [2]
-
-LaTeX Warning: Reference `alg1' on page 3 undefined on input line 123.
-
-[3] [4]
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 130.
+ [3] [4]
+[5]
 Missing character: There is no ‚ in font cmr12!
 Missing character: There is no Ä in font cmr12!
 Missing character: There is no ô in font cmr12!
- [5] [6] [7] (./521_project_paper.aux)
-
-LaTeX Warning: There were undefined references.
-
+ [6] [7] [8] (./521_project_paper.aux)
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
  ) 
 Here is how much of TeX's memory you used:
- 1575 strings out of 493481
- 19926 string characters out of 3140986
- 80214 words of memory out of 3000000
+ 1577 strings out of 493481
+ 19970 string characters out of 3140986
+ 82214 words of memory out of 3000000
  4916 multiletter control sequences out of 15000+200000
  10507 words of font info for 38 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
- 27i,8n,20p,692b,305s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,8n,20p,686b,305s stack positions out of 5000i,500n,10000p,200000b,50000s
 </usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 ></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
 </usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><
@@ -219,10 +237,10 @@ xlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texli
 ve/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texliv
 e/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/
 2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on 521_project_paper.pdf (7 pages, 157063 bytes).
+Output written on 521_project_paper.pdf (8 pages, 162361 bytes).
 PDF statistics:
- 80 PDF objects out of 1000 (max. 8388607)
- 57 compressed objects within 1 object stream
+ 83 PDF objects out of 1000 (max. 8388607)
+ 59 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
