@@ -4,6 +4,7 @@
 \usepackage[noend]{algpseudocode}
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{booktabs}
 
 \newtheorem{claim}{Claim}
 
@@ -100,7 +101,7 @@ To store data about all occurrences of every hashtag seen in the past, we use a 
 
 The goal of the time-aggregated Hokusai system is to store older data at decreased precision since the older data also has decreased value in the computation.  The time-aggregated Hokusai system works by storing aggregate data in Count-Min sketches with a $2^i$ day resolution for the past $2^i$ days.  Each of these Count-Min sketches computes $m$ hash functions from $\{0,1\}^*$ to $\{0, 1, …, n-1\}$.
 
-To this structure we add another layer that combines these Count-Min sketches into a single Count-Min sketch that depreciates the value of older data.  This aggregate Count-Min sketch stores the values $\bar{M} + \sum\limits_{j=0}^{\log⁡(T)} \frac{M^j}{2^j}$ where $\bar{M}$ is the Count-Min sketch storing today's data, $M^j$ is the Count-Min sketch storing the data for the sketch with a $2^j$ resolution, and $T$ is an upper bound on the number of days stored by the data structure.  In section \ref{Correct} we will show that this aggregate Count-Min sketch weights the hashtags that occurred $i$ days ago with value approximately $\frac{1}{2i}$.
+To this structure we add another layer that combines these Count-Min sketches into a single Count-Min sketch that depreciates the value of older data.  This aggregate Count-Min sketch stores the values $\bar{M} + \sum\limits_{j=0}^{\log⁡(T)} \frac{M^j}{2^j}$ where $\bar{M}$ is the Count-Min sketch storing today's data, $M^j$ is the Count-Min sketch storing the data for the sketch with a $2^j$ resolution, and $T$ is an upper bound on the number of days stored by the data structure.  In section \ref{Correct} we will show that this aggregate Count-Min sketch weights the hashtags that occurred $i > 0$ days ago with value approximately $\frac{1}{i}$.
 
 \subsubsection{Data structure for current tweets}
 
@@ -122,7 +123,8 @@ Algorithm \ref{alg1} describes the necessary steps to maintain the Hokusai data 
 \ForAll {$i$}
 	\State Initialize Count-Min sketch $M^i = 0$
 \EndFor
-\State Initialize $t = 0$, $\bar{M} = 0$, and $A = 0$
+\State Initialize $t = 0$
+\State Initialize Count-Min sketches $\bar{M} = 0$ and $A = 0$
 \While {data arrives}
 	\State Aggregate data into sketch $\bar{M}$ for current day while also adding this data to $A$
 	\State $t \leftarrow t + 1$ (increment counter)
@@ -191,11 +193,23 @@ Algorithm \ref{alg1} describes the necessary steps to maintain the Hokusai data 
 
 \subsection{Analysis}
 
-Maybe put table here of all tunable parameters mentioned in the paper to remind readers what they refer to.
 
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+\begin{table}[h]
+\caption{Variables referenced in this section}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Symbol & Meaning                                                           \\ \midrule
+m      & Number of tables for each Count-Min sketch                        \\
+n      & Size of each hash table in each Count-Min sketch                  \\
+s      & Number of distinct hashtags in the Current Window                 \\
+T      & Upper bound on the number of days worth of data stored in History \\
+y      & Minutes of data contained in the Current Window                   \\ \bottomrule
+\end{tabular}
+\end{table}
 \subsubsection{Time analysis}
 
-Let s = size of heap = number of distinct hashtags seen in last y minutes.
 
 Time for actions when a hashtag comes in:
 
