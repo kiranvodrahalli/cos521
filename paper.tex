@@ -118,18 +118,21 @@
 
 \section{Introduction} \label{sec:Intro}
 
-We would like to create an online algorithm for estimating frequencies of time series data. This can be essentially described as desiring to estimate a probability distribution for a finite set of labels in some moving time window of fixed size. Our labels will be Twitter hashtags, and we will take the window size to be 3 hours. Our aim will be to approximate the k most popular Twitter hashtags in the past 3 hours in order to tell what is trending. Some approaches attempt to do this by storing all of the frequency data, and looking at recent spikes while conditioning on all of the past frequency data in order to determine estimates of 'trending' likelihood. We would like to improve the space complexity of this solution. Our approach will differ in that we will not store all the data of the past, but instead use several Count-Min Sketches to approximate the past frequencies. We will store the exact counts for the present (3 hour window), and continuously update the past and present as new data streams in. As a side note, we plan to represent the rolling 3-hour window of frequencies as a discrete approximation: we have a bucket for every second, and update the count of the bucket in every second. When the second passes, we appropriate the bucket that represents the oldest second (i.e. 180 seconds ago) for the newest second, and thus maintain a rolling window across time for exact frequency counts in the past 3 minutes. This rolling window will be denoted as the 'present.'
-
-The baseline comparison for our performance will be the naive version of frequency tallying -- we will keep track of the entire history of frequencies, and will use the past to inform the present probability as to whether or not a given hashtag is trending. We also plan to provide a graphic of the top k hashtags, with histogram changing in real time as the estimated frequencies change. Regarding the data, we would ideally gain access to Twitter's firehose of tweets (as only a small subset of the true data is provided for those without access). 
+% introduction 
+Since its founding in $2006$, Twitter has grown into a corporation dominating a significant
+proporition of social media today. In recent years, it has become interesting to analyze tweets
+to determine interesting phenomena ranging from the viral spread of news to the detection of earthquakes \cc{Burks:2014}. The volume of existing tweets is prohibitively large for standard methods of analysis, and requires approaches that are able to either store large amounts of data in memory for fast access (including parallel approaches to data processing) or approaches that only require sublinear memory while retaining accuracy guarantees. In this paper, we investigate a problem utilizing the latter method. 
 
 \subsection{Problem Statement} 
-
-% introduction 
 
 % give clear definition of problem and motivation here
 
 % adapt proposal -> introduction stuff
+We would like to create an online algorithm for estimating frequencies of Twitter time series data, the stream of hashtags on tweets. The idea is that estimating the top $k$ hashtags in some time interval provides a model for the topics that are trending on Twitter in that interval.
 
+ Essentially, we must estimate a probability distribution for a finite set of labels in some moving time window of fixed size. Our labels will be Twitter hashtags, and we will take the window size to be 3 hours. Our aim will be to approximate the k most popular Twitter hashtags in the past 3 hours in order to tell what is trending. Some approaches attempt to do this by storing all of the frequency data, and looking at recent spikes while conditioning on all of the past frequency data in order to determine estimates of 'trending' likelihood. We would like to improve the space complexity of this solution. Our approach will differ in that we will not store all the data of the past, but instead use several Count-Min Sketches to approximate the past frequencies. We will store the exact counts for the present (3 hour window), and continuously update the past and present as new data streams in. As a side note, we plan to represent the rolling 3-hour window of frequencies as a discrete approximation: we have a bucket for every second, and update the count of the bucket in every second. When the second passes, we appropriate the bucket that represents the oldest second (i.e. 180 seconds ago) for the newest second, and thus maintain a rolling window across time for exact frequency counts in the past 3 minutes. This rolling window will be denoted as the 'present.'
+
+The baseline comparison for our performance will be the naive version of frequency tallying -- we will keep track of the entire history of frequencies, and will use the past to inform the present probability as to whether or not a given hashtag is trending. We also plan to provide a graphic of the top k hashtags, with histogram changing in real time as the estimated frequencies change. Regarding the data, we would ideally gain access to Twitter's firehose of tweets (as only a small subset of the true data is provided for those without access). 
 
 \subsection{Previous Work}
 
@@ -218,6 +221,12 @@ We provide links to \href{https://github.com/kiranvodrahalli/cos521/}{all our co
 %----------------------------------------------------------------------------------------
 
 \begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
+
+
+\bibitem[Burks2014]{Burks:2014}
+Burks, L., Miller, M., and Zadeh, R. (2014). 
+\newblock RAPID ESTIMATE OF GROUND SHAKING INTENSITY BY COMBINING SIMPLE EARTHQUAKE CHARACTERISTICS WITH TWEETS. 
+\newblock Tenth U.S. National Conference on Earthquake Engineering Frontiers of Earthquake Engineering. Retrieved from \href{http://www.stanford.edu/~rezab/papers/eqtweets.pdf}{http://www.stanford.edu/~rezab/papers/eqtweets.pdf}
 
 \bibitem[Cormode2005]{Cormode:2005}
 Cormode, G., and Muthukrishnan, S. (2005). 
