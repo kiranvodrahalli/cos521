@@ -41,6 +41,12 @@ runtime analysis
 space analysis
 accuracy analysis
 
+
+-- key function for heap discussion 
+-- method of choosing, analysis (talk about in design choices as well)
+-- freq/ history
+-- freq/ (history)^p: p = 1.3? 
+
 design choices for data structure
 -- data structure modification (History vs Hokusai)
 -- fibonacci heap 
