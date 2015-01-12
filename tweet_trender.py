@@ -105,7 +105,9 @@ class SmartTrendPredictor(object):
 		with open(data_file) as f:
 			for line in f:
 				try:
-					id_, timestamp, hashtag = line.strip().split(',')
+                                        splitLine = line.strip().split(',')
+                                        timestamp = splitLine[1]
+                                        hashtag = ','.join(splitLine[2:])
 					tweet_dt = parser.parse(timestamp)
 					if isFirstLine:
 						# 'last blocks' start at the beginning of the file
