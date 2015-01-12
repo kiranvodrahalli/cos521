@@ -16,6 +16,11 @@ in order to get good estimates of present trending
 
 this means we are not trying to query the past the way Hokusai is.
 
+why we don't use raw frequency counts for the past hour:
+there are some hashtags that are constantly present (for example, #porn, #gamesinsight, #teamfollowback (a way to get Twitter followers fast))
+these should not be counted as 'trending', so we need to filter these out
+with the history. what remains is 'what is trending'
+
 how did we approach it 
 overview
 
