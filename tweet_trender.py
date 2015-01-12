@@ -129,6 +129,7 @@ class SmartTrendPredictor(object):
 
 		# aggregate only for every block timeunit
 		if diff > self.block_threshold:
+			self.data_block.append(hashtag)
 			self.hist.aggregate_unit(self.data_block)
 			self.data_block = []
 			self.end_of_last_block = curr_dt

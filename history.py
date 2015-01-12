@@ -188,7 +188,7 @@ class History(object):
 		if self.ready:
 			return self.aggregate_score.query(x)
 		else: # only if we're not ready 
-			return self.present.query(x)
+			return self.present.query(x) + self.aggregate_score.query(x)
 
 
 # test the history functions
