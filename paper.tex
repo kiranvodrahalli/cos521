@@ -31,7 +31,7 @@
 \definecolor{MyGreen}{rgb}{0.0,0.4,0.0} % Comment color
 \definecolor{MyBlue}{rgb}{0.0, 0.0, 0.6}
 
-\setlength\parindent{24pt}
+%\setlength\parindent{24pt}
 
 \usepackage[pdftex]{hyperref} % For hyperlinks in the PDF
 \hypersetup{
@@ -118,7 +118,9 @@
 
 \section{Introduction} \label{sec:Intro}
 
-\lipsum[1]
+We would like to create an online algorithm for estimating frequencies of time series data. This can be essentially described as desiring to estimate a probability distribution for a finite set of labels in some moving time window of fixed size. Our labels will be Twitter hashtags, and we will take the window size to be 3 hours. Our aim will be to approximate the k most popular Twitter hashtags in the past 3 hours in order to tell what is trending. Some approaches attempt to do this by storing all of the frequency data, and looking at recent spikes while conditioning on all of the past frequency data in order to determine estimates of 'trending' likelihood. We would like to improve the space complexity of this solution. Our approach will differ in that we will not store all the data of the past, but instead use several Count-Min Sketches to approximate the past frequencies. We will store the exact counts for the present (3 hour window), and continuously update the past and present as new data streams in. As a side note, we plan to represent the rolling 3-hour window of frequencies as a discrete approximation: we have a bucket for every second, and update the count of the bucket in every second. When the second passes, we appropriate the bucket that represents the oldest second (i.e. 180 seconds ago) for the newest second, and thus maintain a rolling window across time for exact frequency counts in the past 3 minutes. This rolling window will be denoted as the 'present.'
+
+The baseline comparison for our performance will be the naive version of frequency tallying -- we will keep track of the entire history of frequencies, and will use the past to inform the present probability as to whether or not a given hashtag is trending. We also plan to provide a graphic of the top k hashtags, with histogram changing in real time as the estimated frequencies change. Regarding the data, we would ideally gain access to Twitter's firehose of tweets (as only a small subset of the true data is provided for those without access). 
 
 \subsection{Problem Statement} 
 
@@ -128,13 +130,12 @@
 
 % adapt proposal -> introduction stuff
 
-\lipsum[2-3] % Dummy text
 
 \subsection{Previous Work}
 
 % describe past work in the areas here
+As a preliminary starting point for approximating the past frequencies, we will utilize concepts from 'Hokusai -- Sketching Streams in Real Time' (Matusevych et al., 2012) to generalize the Count-Min Sketch scheme to time-series data. The rough idea behind this approach is that in the distant past, we should only care about heavy-hitters, i.e. hashtags with high frequencies in order to estimate the likelihood that the hashtag is trending again.
 
-\lipsum[2-3] % Dummy text
 
 %------------------------------------------------
 
@@ -204,7 +205,13 @@ e = mc^2
 %------------------------------------------------
 \section{Future Work} \label{sec:Future Work}
 
-\lipsum[1]
+Given enough time, another data stream of interest could be Wikipedia edits -- our goal would be to estimate which Wikipedia topics are being edited the most at any given time interval of 3 hours (though we could shrink this to smaller times). As a final sidenote, another application of this algorithm/ data structure would be to estimate the hottest selling stocks on Wall St. Of course this would require a firehose data stream to Wall St., and as that is not as easily obtainable as say, Twitter data, we only mention it as another useful application.
+
+\section{Appendix I: Code} \label{sec:Appendix_code}
+
+We provide links to \href{https://github.com/kiranvodrahalli/cos521/}{all our code}.
+
+\end{multicols}
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
@@ -212,16 +219,22 @@ e = mc^2
 
 \begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
 
-\bibitem[Figueredo and Wolf, 2009]{Figueredo:2009dg}
-Figueredo, A.~J. and Wolf, P. S.~A. (2009).
-\newblock Assortative pairing and life history strategy - a cross-cultural
-  study.
-\newblock {\em Human Nature}, 20:317--330.
+\bibitem[Cormode2005]{Cormode:2005}
+Cormode, G., and Muthukrishnan, S. (2005). 
+\newblock An improved data stream summary: The count-min sketch and its applications. 
+\newblock {\em Journal of Algorithms, 55}(1), pp. 58-75.
+
+\bibitem[Matusevych2012]{Matusevych:2012}
+Matusevych, S., Smola, A., and Ahmed, A. (2012).
+\newblock Hokusai--Sketching Streams in Real Time.
+\newblock {\em UAI '12: 28th conference on Uncertainty in Artificial Intelligence}, pp. 594-603.
+
+
  
 \end{thebibliography}
 
 %----------------------------------------------------------------------------------------
 
-\end{multicols}
+
 
 \end{document}

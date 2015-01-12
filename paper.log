@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2013.4.19)  12 JAN 2015 15:42
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2013.4.19)  12 JAN 2015 17:16
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -639,35 +639,35 @@ LaTeX Font Info:    Font shape `T1/pplx/bx/n' in size <10> not available
 
 {/usr/local/texlive/2012/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
  [4]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 227.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 240.
 
 [5]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 227.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 240.
  (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 227.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 227.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 240.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 240.
 Package rerunfilecheck Info: File `paper.out' has not changed.
-(rerunfilecheck)             Checksum: 40A23BA64CEBA7C3B69509D41DE3F431;802.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 227.
+(rerunfilecheck)             Checksum: 4E49633D390C84531CCDCD2AA1573846;854.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 240.
  ) 
 Here is how much of TeX's memory you used:
- 10763 strings out of 493481
- 164993 string characters out of 3140986
- 381257 words of memory out of 3000000
- 13707 multiletter control sequences out of 15000+200000
- 50827 words of font info for 198 fonts, out of 3000000 for 9000
+ 10784 strings out of 493481
+ 165193 string characters out of 3140986
+ 390329 words of memory out of 3000000
+ 13710 multiletter control sequences out of 15000+200000
+ 51732 words of font info for 210 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
- 36i,7n,38p,258b,525s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 36i,7n,38p,1506b,517s stack positions out of 5000i,500n,10000p,200000b,50000s
 {/usr/local/texlive/2012/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/tex
 live/2012/texmf-dist/fonts/type1/public/fpl/fplrc8a.pfb></usr/local/texlive/201
 2/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2012/texmf
 -dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2012/texmf-dist/f
 onts/type1/urw/palatino/uplri8a.pfb>
-Output written on paper.pdf (5 pages, 76509 bytes).
+Output written on paper.pdf (5 pages, 81074 bytes).
 PDF statistics:
- 113 PDF objects out of 1000 (max. 8388607)
- 100 compressed objects within 1 object stream
- 22 named destinations out of 1000 (max. 500000)
- 45681 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 120 PDF objects out of 1000 (max. 8388607)
+ 106 compressed objects within 2 object streams
+ 24 named destinations out of 1000 (max. 500000)
+ 45689 words of extra memory for PDF output out of 51595 (max. 10000000)
 

@@ -55,7 +55,7 @@ get some spread, i.e. not everythign was 1.0 in priority.
 -- freq/ history
 -- freq/ (history)^p: p = 1.3? : this is not good, everything goes to 1
 -- different parameter choices affect error: more error makes more random -> more spread
--- the space-saving actually had a side-effect of adding some smoothing error, which made
+-- the space-saving actually has the side-effect of adding some smoothing error, which made
 the increased space efficiency actually beneficial for the trend-detection application 
 -- (with higher error it worked better; when we got more precise, it worked worse)
 
@@ -78,3 +78,8 @@ the results
 future work
 
 references
+
+
+http://newsoffice.mit.edu/2012/predicting-twitter-trending-topics-1101
+
+
