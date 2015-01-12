@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2013.4.19)  12 JAN 2015 18:44
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2013.4.19)  12 JAN 2015 18:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -651,11 +651,11 @@ Package rerunfilecheck Info: File `paper.out' has not changed.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 249.
  ) 
 Here is how much of TeX's memory you used:
- 10814 strings out of 493481
- 165457 string characters out of 3140986
+ 10812 strings out of 493481
+ 165441 string characters out of 3140986
  381369 words of memory out of 3000000
  13711 multiletter control sequences out of 15000+200000
- 53270 words of font info for 231 fonts, out of 3000000 for 9000
+ 53166 words of font info for 230 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
  36i,7n,38p,1387b,529s stack positions out of 5000i,500n,10000p,200000b,50000s
 {/usr/local/texlive/2012/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
@@ -664,7 +664,7 @@ live/2012/texmf-dist/fonts/type1/public/fpl/fplrc8a.pfb></usr/local/texlive/201
 2/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2012/texmf
 -dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2012/texmf-dist/f
 onts/type1/urw/palatino/uplri8a.pfb>
-Output written on paper.pdf (5 pages, 86999 bytes).
+Output written on paper.pdf (5 pages, 87894 bytes).
 PDF statistics:
  124 PDF objects out of 1000 (max. 8388607)
  110 compressed objects within 2 object streams
