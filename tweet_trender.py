@@ -93,8 +93,15 @@ class SmartTrendPredictor(object):
 
 		# similar to Hokusai data structure 
 		# pick some parameters here
-		# n = 10, m = 1000 (size of hash tables), d = 100 (# of tables)
-		self.hist = h.History(10, 1000, 100)
+		# n = 6, m = 100000 (size of hash tables), d = 20 (# of tables)
+		# n: we do it for a month, so ~ 2^(6-1) days is definitely enough
+		# m = ceiling(e/epsilon), d = ceiling(ln(1/delta))
+		# error in query is in factor epilson with probability 1 - delta
+		# for d = 20, we have with high probability (1 - 1/e^20)
+		# we have error factor of e/100000 of the total number of hashtags
+		# total number of hashtags is ~ 15 million
+		# thus error bounds are in range ~ 450 on a given count
+		self.hist = h.History(6, 100000, 20)
 
 		# first line bool
 		# used for checking if its the first line in the file
@@ -105,9 +112,9 @@ class SmartTrendPredictor(object):
 		with open(data_file) as f:
 			for line in f:
 				try:
-                                        splitLine = line.strip().split(',')
-                                        timestamp = splitLine[1]
-                                        hashtag = ','.join(splitLine[2:])
+					splitLine = line.strip().split(',')
+					timestamp = splitLine[1]
+					hashtag = ','.join(splitLine[2:])
 					tweet_dt = parser.parse(timestamp)
 					if isFirstLine:
 						# 'last blocks' start at the beginning of the file
