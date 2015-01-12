@@ -1,6 +1,8 @@
 Things to add:
 abstract
+
 clear definition of problem and motivation 
+
 adapt proposal -> introduction stuff
 background work: cm-sketch, hokusai (algorithm), specific twitter trending work: ? 
 http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6137387&tag=1 

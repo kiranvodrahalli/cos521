@@ -17,8 +17,39 @@
 %----------------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
-
 \documentclass[twoside]{article}
+
+\usepackage{mathtools}
+\usepackage{amsmath}
+
+\usepackage{graphicx}
+\graphicspath{ {figures/} }
+
+\usepackage[usenames,dvipsnames]{color} % Required for specifying custom colors and referring to colors by name
+
+\definecolor{MyRed}{rgb}{0.6, 0.0, 0.0} 
+\definecolor{MyGreen}{rgb}{0.0,0.4,0.0} % Comment color
+\definecolor{MyBlue}{rgb}{0.0, 0.0, 0.6}
+
+\setlength\parindent{24pt}
+
+\usepackage[pdftex]{hyperref} % For hyperlinks in the PDF
+\hypersetup{
+  colorlinks=true,
+  linkcolor=MyBlue, 
+  citecolor=MyRed,
+  urlcolor= MyGreen
+}
+
+% make hyperlinks bold
+\newcommand{\aref}[1]
+ {\textbf{\autoref{#1}}}
+
+\newcommand{\nref}[1]
+ {\textbf{\nameref{#1}}}
+
+\newcommand{\cc}[1]
+ {\textbf{\cite{#1}}}
 
 \usepackage{lipsum} % Package to generate dummy text throughout this template
 
@@ -42,8 +73,8 @@
 \renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
 
 \usepackage{titlesec} % Allows customization of titles
-\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
-\renewcommand\thesubsection{\Roman{subsection}} % Roman numerals for subsections
+%\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
+%\renewcommand\thesubsection{\Roman{subsection}} % Roman numerals for subsections
 \titleformat{\section}[block]{\large\scshape\centering}{\thesection.}{1em}{} % Change the look of the section titles
 \titleformat{\subsection}[block]{\large}{\thesubsection.}{1em}{} % Change the look of the section titles
 
@@ -85,9 +116,11 @@
 
 \begin{multicols}{2} % Two-column layout throughout the main article text
 
-\section{Introduction}
+\section{Introduction} \label{sec:Intro}
 
-\subsection{Problem Statement}
+\lipsum[1]
+
+\subsection{Problem Statement} 
 
 % introduction 
 
@@ -101,7 +134,11 @@
 
 % describe past work in the areas here
 
-\subsection{Outline}
+\lipsum[2-3] % Dummy text
+
+%------------------------------------------------
+
+\section{Describing the Algorithm}
 
 % to note: our goal was to make a real time query algorithm that USES
 % the history (in condensed form) to help understand current time 
@@ -110,15 +147,39 @@
 % this means we are not trying to query the past the way Hokusai is.
 
 % how did we approach it 
+\lipsum[1]
 
-% overview of the rest of the paper
-
+\subsection{Data Structures}
 % -- we maintain datastructure in two parts: History, and Present
-%------------------------------------------------
+\lipsum[2-3] % Dummy text
 
-\section{Methods}
+\subsection{Algorithm Pseudocode} 
 
 \lipsum[4] % Dummy text
+
+%------------------------------------------------
+
+\section{Analyzing the Algorithm}
+
+\lipsum[1]
+
+\subsection{Correctness}
+
+\lipsum[2-3]
+
+\subsection{Spatial Analysis}
+
+\lipsum[2-3]
+
+\subsection{Runtime Analysis}
+
+\lipsum[2-3]
+
+%------------------------------------------------
+
+\section{Design Choices}
+
+\lipsum[1]
 
 %------------------------------------------------
 
@@ -138,13 +199,12 @@ e = mc^2
 
 \section{Discussion}
 
-\subsection{Subsection One}
-
 \lipsum[7] % Dummy text
 
-\subsection{Subsection Two}
+%------------------------------------------------
+\section{Future Work} \label{sec:Future Work}
 
-\lipsum[8] % Dummy text
+\lipsum[1]
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
