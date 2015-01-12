@@ -32,9 +32,15 @@ from copy import deepcopy
 # the assumption is that the tweets are in chronological order.
 # the trend predictor builds a datastructure that evalutes 
 # the top k tweets for that specific file. 
-# we want to implement time snapshots
+# maybe we want to implement time snapshots INSIDE a given file?
+# as in, top k for a certain time range? maybe not necessary, 
+# because here, we're just simulating "up to a certain point in time"
+# with the file 
 class SmartTrendPredictor(object):
 
+	# NOTE THE HISTORY PARAMETERS, THRESHOLDS, AND OTHER STUFF
+	# MAY BE CHANGED INSIDE HERE. 
+	# I COULD EXPOSE THESE PARAMETERS BUT I DID NOT. feel free to do so if you want.
 	def __init__(self, data_file):
 
 		# maintains list of hashtags
@@ -246,6 +252,10 @@ class SmartTrendPredictor(object):
 			print 'count of ' + str(key) + ': ' + str(key_counts[key])
 
 
+# build a smart trend predictor, 
+# see what the key counts are (what priorities exist),
+# see what the top ones are for the test file 'tweet_data', 
+# a file that only spans a few hours (so the history stuff doesn't get tested..)
 def test():
 	stp = SmartTrendPredictor('tweet_data')
 	stp.print_all_keys()
