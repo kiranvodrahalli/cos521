@@ -225,6 +225,8 @@ class SmartTrendPredictor(object):
 
 	# the top hashtags in the min-heap
 	# (most negative)
+	# FORGOT TO CHECK POINTERS HERE
+	# need to write code that removes properly
 	def get_topk_hashtags(self, k):
 		# what we will return
 		# list of entries (have priority and value)
@@ -233,11 +235,16 @@ class SmartTrendPredictor(object):
 			top_node = self.heap.dequeue_min()
 			val = top_node.get_value()
 			priority = top_node.get_priority()
+			ptr = self.hashtag_freq[val][1]
+			# self.heap_ptrs[ptr] should be the same as top_node
+
 			#print 'Priority: ' + str(-1*priority)
 			#print 'Value: ' + str(val)
-			best_nodes.append((priority, val))
+			best_nodes.append((priority, val, ptr))
 		for node in best_nodes:
-			self.heap.enqueue(node[1], node[0])
+			new_node = self.heap.enqueue(node[1], node[0])
+			ptr = node[2]
+			self.heap_ptrs[ptr] = new_node
 		return sorted(best_nodes, reverse=True)
 
 	def print_all_keys(self):
