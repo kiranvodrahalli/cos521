@@ -23,7 +23,7 @@ abstract
 clear definition of problem and motivation 
 adapt proposal -> introduction stuff
 background work: cm-sketch, hokusai (algorithm), specific twitter trending work: ? 
-http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6137387&tag=1 
+%http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6137387&tag=1 
 (this is the closest we could find)
 (to the best of our knowledge, this work has not been done before)
 
@@ -100,7 +100,7 @@ To store data about all occurrences of every hashtag seen in the past, we use a 
 
 The goal of the time-aggregated Hokusai system is to store older data at decreased precision since the older data also has decreased value in the computation.  The time-aggregated Hokusai system works by storing aggregate data in Count-Min sketches with a $2^i$ day resolution for the past $2^i$ days.  Each of these Count-Min sketches computes $m$ hash functions from $\{0,1\}^*$ to $\{0, 1, …, n-1\}$.
 
-To this structure we add another layer that combines these Count-Min sketches into a single Count-Min sketch that depreciates the value of older data.  This aggregate Count-Min sketch stores the values $\bar{M} + \sum\limits_{j=1}^{\log⁡(T)} \frac{M^j}{2^j}$ where $\bar{M}$ is the Count-Min sketch storing today's data, $M^j$ is the Count-Min sketch storing the data for the sketch with a $2^j$ resolution, and $T$ is an upper bound on the number of days stored by the data structure.  In section \ref{Correct} we will show that this aggregate Count-Min sketch weights the hashtags that occurred $i$ days ago with value approximately $\frac{1}{2i}$.
+To this structure we add another layer that combines these Count-Min sketches into a single Count-Min sketch that depreciates the value of older data.  This aggregate Count-Min sketch stores the values $\bar{M} + \sum\limits_{j=0}^{\log⁡(T)} \frac{M^j}{2^j}$ where $\bar{M}$ is the Count-Min sketch storing today's data, $M^j$ is the Count-Min sketch storing the data for the sketch with a $2^j$ resolution, and $T$ is an upper bound on the number of days stored by the data structure.  In section \ref{Correct} we will show that this aggregate Count-Min sketch weights the hashtags that occurred $i$ days ago with value approximately $\frac{1}{2i}$.
 
 \subsubsection{Data structure for current tweets}
 
@@ -144,22 +144,13 @@ Algorithm \ref{alg1} describes the necessary steps to maintain the Hokusai data 
 \caption{Thread to process data input.}
 \begin{algorithmic}[1]
 \While {data arrives}
-	\If {hashtag is in hash table}
-		\State Increment the frequency stored at that entry.
-		\State Update the key of the node in the Fibonacci heap.
-	\Else
-		\State Insert a new node into the Fibonacci heap with the appropriate key and value. 
-		\State Insert the hashtag into the hash table with a pointer to this node.
- 	\EndIf
-\EndWhile
-\end{algorithmic}
-\end{algorithm}
-
-
-\begin{algorithm}
-\caption{Thread to discard oldest recent hashtags.}
-\begin{algorithmic}[1]
-\Loop
+	\If {the current day is different than that of the last hashtag seen}
+		\State Do all the end-of-day aggregation for the Hokusai structure as detailed in Algorithm \ref{alg1}.
+		\ForAll {elements in the Fibonacci heap}
+			\State look up the hashtag corresponding to this node in the hash table
+			\State Update the key of the node to: \[\frac{\text{frequency in last y minutes found at the table entry}}{\text{new value in Hokusai data structure}}\]
+		\EndFor
+	\EndIf
 	\If {queue is not empty}
 		\State Peek at end of queue.
 		\If {the timestamp + $y$ minutes is before the current time}
@@ -172,22 +163,14 @@ Algorithm \ref{alg1} describes the necessary steps to maintain the Hokusai data 
 			\EndIf
 		\EndIf
 	\EndIf
-\EndLoop
-\State Make the hash table for the oldest $x$ minute interval correspond to the upcoming $x$ minute interval.
-
-\end{algorithmic}
-\end{algorithm}
-
-
-
-\begin{algorithm}
-\caption{Updates at end of a day.}
-\begin{algorithmic}[1]
-\State Do all the end-of-day aggregation for the Hokusai structure as detailed in Algorithm \ref{alg1}.
-\ForAll {elements in the Fibonacci heap}
-	\State look up the hashtag corresponding to this node in the hash table
-	\State Update the key of the node to: \[\frac{\text{frequency in last y minutes found at the table entry}}{\text{new value in Hokusai data structure}}\]
-\EndFor
+	\If {hashtag is in hash table}
+		\State Increment the frequency stored at that entry.
+		\State Update the key of the node in the Fibonacci heap.
+	\Else
+		\State Insert a new node into the Fibonacci heap with the appropriate key and value. 
+		\State Insert the hashtag into the hash table with a pointer to this node.
+ 	\EndIf
+\EndWhile
 \end{algorithmic}
 \end{algorithm}
 
@@ -253,9 +236,9 @@ Thus, takes O(log(s)) amortized time + expected O(1) time  + O(m) time to do act
 Time for actions when day ends:
 Takes O(nm) amortized time to do all end of day aggregation.
 Takes O(m) time to compute each key.
-Takes O(1) amortized time to update each key since all keys are nondecreasing.
+Takes O(log(s)) amortized time to update each key.
 
-Thus, takes O(nm + s) amortized time + O(ms) time at the end of the day.
+Thus, takes O(nm + slog(s)) amortized time + O(ms) time at the end of the day.
 
 Time for actions when finding top k trending items:
 	Takes O(k*log(s)) time for delete-max operations.

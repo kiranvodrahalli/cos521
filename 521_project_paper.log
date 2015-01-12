@@ -1,24 +1,14 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2013.4.19)  12 JAN 2015 13:36
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  12 JAN 2015 14:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **521_project_paper.tex
 (./521_project_paper.tex
-LaTeX2e <2011/06/27>
-Babel <v3.8m> and hyphenation patterns for english, dumylang, nohyphenation, ge
-rman-x-2012-05-30, ngerman-x-2012-05-30, afrikaans, ancientgreek, ibycus, arabi
-c, armenian, basque, bulgarian, catalan, pinyin, coptic, croatian, czech, danis
-h, dutch, ukenglish, usenglishmax, esperanto, estonian, ethiopic, farsi, finnis
-h, french, friulan, galician, german, ngerman, swissgerman, monogreek, greek, h
-ungarian, icelandic, assamese, bengali, gujarati, hindi, kannada, malayalam, ma
-rathi, oriya, panjabi, tamil, telugu, indonesian, interlingua, irish, italian, 
-kurmanji, latin, latvian, lithuanian, mongolian, mongolianlmc, bokmal, nynorsk,
- piedmontese, polish, portuguese, romanian, romansh, russian, sanskrit, serbian
-, serbianc, slovak, slovenian, spanish, swedish, turkish, turkmen, ukrainian, u
-ppersorbian, welsh, loaded.
-(/usr/local/texlive/2012/texmf-dist/tex/latex/base/article.cls
+LaTeX2e <2014/05/01>
+Babel <3.9k> and hyphenation patterns for 78 languages loaded.
+(/usr/local/texlive/2014/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
-(/usr/local/texlive/2012/texmf-dist/tex/latex/base/size12.clo
+(/usr/local/texlive/2014/texmf-dist/tex/latex/base/size12.clo
 File: size12.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
 )
 \c@part=\count79
@@ -33,11 +23,11 @@ File: size12.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
 \belowcaptionskip=\skip42
 \bibindent=\dimen102
 )
-(/usr/local/texlive/2012/texmf-dist/tex/latex/algorithms/algorithm.sty
+(/usr/local/texlive/2014/texmf-dist/tex/latex/algorithms/algorithm.sty
 Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
 nment
 
-(/usr/local/texlive/2012/texmf-dist/tex/latex/float/float.sty
+(/usr/local/texlive/2014/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \c@float@type=\count87
 \float@exts=\toks14
@@ -45,16 +35,16 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \@float@everytoks=\toks15
 \@floatcapt=\box27
 )
-(/usr/local/texlive/2012/texmf-dist/tex/latex/base/ifthen.sty
+(/usr/local/texlive/2014/texmf-dist/tex/latex/base/ifthen.sty
 Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
 )
 \@float@every@algorithm=\toks16
 \c@algorithm=\count88
 )
-(/usr/local/texlive/2012/texmf-dist/tex/latex/algorithmicx/algpseudocode.sty
+(/usr/local/texlive/2014/texmf-dist/tex/latex/algorithmicx/algpseudocode.sty
 Package: algpseudocode 
 
-(/usr/local/texlive/2012/texmf-dist/tex/latex/algorithmicx/algorithmicx.sty
+(/usr/local/texlive/2014/texmf-dist/tex/latex/algorithmicx/algorithmicx.sty
 Package: algorithmicx 2005/04/27 v1.2 Algorithmicx
 
 Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
@@ -70,24 +60,24 @@ Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
 \ALG@tmplength=\skip45
 )
 Document Style - pseudocode environments for use with the `algorithmicx' style
-) (/usr/local/texlive/2012/texmf-dist/tex/latex/amsmath/amsmath.sty
+) (/usr/local/texlive/2014/texmf-dist/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2013/01/14 v2.14 AMS math features
 \@mathmargin=\skip46
 
 For additional information on amsmath, use the `?' option.
-(/usr/local/texlive/2012/texmf-dist/tex/latex/amsmath/amstext.sty
+(/usr/local/texlive/2014/texmf-dist/tex/latex/amsmath/amstext.sty
 Package: amstext 2000/06/29 v2.01
 
-(/usr/local/texlive/2012/texmf-dist/tex/latex/amsmath/amsgen.sty
+(/usr/local/texlive/2014/texmf-dist/tex/latex/amsmath/amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0
 \@emptytoks=\toks17
 \ex@=\dimen103
 ))
-(/usr/local/texlive/2012/texmf-dist/tex/latex/amsmath/amsbsy.sty
+(/usr/local/texlive/2014/texmf-dist/tex/latex/amsmath/amsbsy.sty
 Package: amsbsy 1999/11/29 v1.2d
 \pmbraise@=\dimen104
 )
-(/usr/local/texlive/2012/texmf-dist/tex/latex/amsmath/amsopn.sty
+(/usr/local/texlive/2014/texmf-dist/tex/latex/amsmath/amsopn.sty
 Package: amsopn 1999/12/14 v2.01 operator names
 )
 \inf@bad=\count96
@@ -128,7 +118,7 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 567.
 LaTeX Info: Redefining \[ on input line 2665.
 LaTeX Info: Redefining \] on input line 2666.
 )
-(/usr/local/texlive/2012/texmf-dist/tex/latex/amscls/amsthm.sty
+(/usr/local/texlive/2014/texmf-dist/tex/latex/amscls/amsthm.sty
 Package: amsthm 2004/08/06 v2.20
 \thm@style=\toks22
 \thm@bodyfont=\toks23
@@ -157,90 +147,56 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 10.
 LaTeX Font Info:    ... okay on input line 10.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 10.
 LaTeX Font Info:    ... okay on input line 10.
+ [1
 
-! Missing $ inserted.
-<inserted text> 
-                $
-l.26 http://ieeexplore.ieee.org/xpls/abs_
-                                         all.jsp?arnumber=6137387&tag=1
-? 
-! Misplaced alignment tab character &.
-l.26 ...eee.org/xpls/abs_all.jsp?arnumber=6137387&
-                                                  tag=1
-? 
-! Missing $ inserted.
-<inserted text> 
-                $
-l.29 
-     
-? 
-
-Overfull \hbox (57.05025pt too wide) in paragraph at lines 21--29
-\OT1/cmr/m/n/12 spe-cific twit-ter trend-ing work: ? http://ieeexplore.ieee.org
-/xpls/abs$[]\OML/cmm/m/it/12 ll:jsp\OT1/cmr/m/n/12 ?\OML/cmm/m/it/12 arnumber \
-OT1/cmr/m/n/12 =
- []
-
-
-Overfull \hbox (153.99063pt too wide) in paragraph at lines 21--29
-\OT1/cmr/m/n/12 6137387\OML/cmm/m/it/12 tag \OT1/cmr/m/n/12 = 1(\OML/cmm/m/it/1
-2 thisistheclosestwecouldfind\OT1/cmr/m/n/12 )(\OML/cmm/m/it/12 tothebestofourk
-nowledge; thisworkhasnotbeendonebefore\OT1/cmr/m/n/12 )$ 
- []
-
-[1
-
-{/usr/local/texlive/2012/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+{/usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 Missing character: There is no ‚ in font cmr12!
 Missing character: There is no Ä in font cmr12!
 Missing character: There is no ¶ in font cmr12!
 Missing character: There is no ‚ in font cmr8!
 Missing character: There is no Å in font cmr8!
 Missing character: There is no ° in font cmr8!
-
-[2]
+ [2]
 LaTeX Font Info:    Try loading font information for OMS+cmr on input line 130.
 
- (/usr/local/texlive/2012/texmf-dist/tex/latex/base/omscmr.fd
+
+(/usr/local/texlive/2014/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 130.
- [3] [4]
-[5]
+ [3] [4] [5]
 Missing character: There is no ‚ in font cmr12!
 Missing character: There is no Ä in font cmr12!
 Missing character: There is no ô in font cmr12!
- [6] [7] [8] (./521_project_paper.aux)
 
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
- ) 
+[6] [7] (./521_project_paper.aux) ) 
 Here is how much of TeX's memory you used:
- 1577 strings out of 493481
- 19970 string characters out of 3140986
- 82214 words of memory out of 3000000
- 4916 multiletter control sequences out of 15000+200000
- 10507 words of font info for 38 fonts, out of 3000000 for 9000
- 957 hyphenation exceptions out of 8191
- 27i,8n,20p,686b,305s stack positions out of 5000i,500n,10000p,200000b,50000s
-</usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
-></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
-</usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><
-/usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></u
-sr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
-/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/l
-ocal/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/loc
-al/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local
-/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/te
-xlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texli
-ve/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texliv
-e/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/
-2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on 521_project_paper.pdf (8 pages, 162361 bytes).
+ 1576 strings out of 493117
+ 19958 string characters out of 6135433
+ 85861 words of memory out of 5000000
+ 5070 multiletter control sequences out of 15000+600000
+ 10507 words of font info for 38 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 27i,8n,20p,686b,305s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texlive/2014/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2014/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2014/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmmi12.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmr10.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmr12.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmr17.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmr7.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmr8.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmsy10.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmsy8.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmti12.pfb>
+Output written on 521_project_paper.pdf (7 pages, 159351 bytes).
 PDF statistics:
- 83 PDF objects out of 1000 (max. 8388607)
- 59 compressed objects within 1 object stream
+ 80 PDF objects out of 1000 (max. 8388607)
+ 57 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
