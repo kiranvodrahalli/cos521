@@ -1,0 +1,14 @@
+Regarding the visualization of the hashtags:
+
+here we have a histogram of hashtag frequencies. We cherry-picked a set of interesting hashtags based on our observations, and then made this visualization to present the changes in frequency in 3 hour intervals over time of these hashtags.
+
+The fact that these frequencies change over time and spike and fall in turns suggests that
+when the hashtag frequencies spike, the hashtags are 'trending.' The goal of our algorithms is to identify the hashtags (of a much larger set) which are trending at a given point in time.
+
+So we hope that for a selected 3 hour interval, the hashtags that our algorithms say are trending include the ones that are trending at that time in this visualization.
+
+
+
+
+Regarding the visual evidence of the trending tweets:
+
