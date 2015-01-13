@@ -306,69 +306,70 @@ We use Algorithm \aref{alg3} to calculate the top $k$ hashtags by querying the h
 \begin{tabular}{@{}ll@{}}
 \toprule
 Symbol & Meaning                                                           \\ \midrule
-d      & Number of hash tables for each Count-Min sketch                        \\
-m      & Size of each hash table in each Count-Min sketch                  \\
-s      & Number of distinct hashtags in the Current-Window                 \\
-z      & Time resolution of the unit-sized Count-Min sketches                   \\
-T      & Upper bound on the number of $z$-units of data stored in History                   \\
-x      & Total number of hashtags in the Current-Window                   \\
-y      & Time interval of data contained in the Current-Window                   \\ \bottomrule
+$d$      & Number of hash tables for each Count-Min sketch                        \\
+$m$      & Size of each hash table in each Count-Min sketch                  \\
+$s$      & Number of distinct hashtags in the Current-Window                 \\
+$z$      & Time resolution of the unit-sized Count-Min sketches                   \\
+$T$      & Upper bound on the number of $z$-units of data stored in History                   \\
+$x$      & Total number of hashtags in the Current-Window                   \\
+$y$      & Time interval of data contained in the Current-Window                   \\ \bottomrule
 \end{tabular}
 \caption{Variables referenced in this section}
 \end{table}
 
+\newpage
 \subsection{Correctness} \label{sec:Correctness}
 
-This algorithm finds the $k$ hashtags that have the maximum value of (frequency in last $y$-unit) / (value in History data structure).
+Our history-sensitive algorithm finds the $k$ hashtags that have the maximum value of 
+$
+\frac{\textbf{freq}(\textnormal{hashtag}, \textnormal{present } y \textnormal{-unit})}{\textbf{History}[\textnormal{hashtag}]}
+$.
 
 \begin{claim}
-The value for hashtag $x$ in the aggregate Count-Min sketch of the History data structure is within a factor of 4 of $\overline{M}(x) + \sum\limits_{i=1}^T \frac{1}{i}*$ (value for $x$ in a Count-Min sketch using the same hash functions for all hashtags occurring i days ago).
+The value for hashtag $x$ in the aggregate Count-Min sketch of the History data structure is within a factor $4$ of $\overline{M}(x) + \sum\limits_{i=1}^T \frac{1}{i}*$ (value for $x$ in a Count-Min sketch using the same hash functions for all hashtags occurring $i$ $z$-units ago).
 \end{claim}
 \begin{proof}
 First, we use Theorem $4$ in \cc{Matusevych:2012} which states that ``At $t$, the sketch $M^j$ contains statistics for the period $[t - \delta, t - \delta - 2^j]$ where $\delta = t \mod 2^j$.''
 
 Let $b$ be the location in the aggregate Count-Min sketch containing the value returned when $x$ is queried.
+Let $h$ be any instance of any hashtag that appeared on $z$-unit $p$ such that seeing $h$ incremented counters in position $b$.
 
-Let $h$ be any instance of any hashtag that appeared on day $p$ such that seeing $h$ incremented counters in position $b$.
+\bigskip
 
-Case 1: $p=t$
+\noindent $\textbf{Case 1}$: $p=t$
 
-Then the statistics for $h$ are recorded in $\overline{M}$ and are not in any $M^j$.
+Then, the statistics for $h$ are recorded in $\overline{M}$ and are not in any $M^j$.
 
-Case 2: $2^i > t-p \geq 2^{i-1}$ for some $i > 0$
+\noindent $\textbf{Case 2}$: $2^i > t-p \geq 2^{i-1}$ for some $i > 0$
 
 By Theorem 4, for all $j \leq i - 2$, $M^j$ does not contain statistics for $p$ since $p \leq t - 2^{i-1} \leq t - \delta - 2^{i-2}$.
 
-Therefore, the increments that occurred in the Count-Min sketch for hashtags occurring $i$ days ago contribute at most $\sum\limits_{j = i - 1}^{T} 2^{-j} < 2^{2-i}$ to the value in position $b$.
+\bigskip
 
-Let $q$ be the largest $j$ such that $t - \delta - 2^j \geq p$
+Therefore, the increments that occurred in the Count-Min sketch for hashtags occurring $i$ $z$-units ago contribute at most $\sum\limits_{j = i - 1}^{T} 2^{-j} < 2^{2-i}$ to the value in position $b$.
 
+Let $q$ be the largest $j$ such that $t - \delta - 2^j \geq p$.
 Then $p \leq t - \delta - 2^q$.  Let $\lambda = t \mod 2^{q+1}$.  Then $\lambda = \delta$ or $\lambda = \delta + 2^q$.
-
 Since $q$ is the largest $j$ such that $t - \delta - 2^j \geq p$, $p > t - \lambda - 2^{q+1}$.
-
 Also, $p \leq t - \delta - 2^q \leq t - \lambda$, so $M^{q+1}$ contains statistics about $h$.
-
 For all $j \geq i$, $t - \delta - 2^j < t - 2^j < p$, so $q \leq i - 1$. 
-
 Thus, incrementing the counter in $M^{q + 1}$ contributed at least $2^{-i}$ to the value in position $b$.
+Thus, the contributions to the sum are within a factor $4$ of $\frac{1}{t-p}$.
 
-Thus, the contributions to the sum are within a factor of 4 of $\frac{1}{t-p}$.
-
-Therefore, summing over all hashtags that increment counters in position $b$ gives $\overline{M}(x)$ for all hashtags that occurred on day $t$, and within a factor of 4 of $\sum\limits_{i=1}^T \frac{1}{i}*$(value for $x$ in a Count-Min sketch using the same hash functions for all hashtags occurring $i > 0$ days ago). 
+Therefore, summing over all hashtags that increment counters in position $b$ gives $\overline{M}(x)$ for all hashtags that occurred on $z$-unit $t$, and within a factor $4$ of $\sum\limits_{i=1}^T \frac{1}{i}*$(value for $x$ in a Count-Min sketch using the same hash functions for all hashtags occurring $i > 0$ $z$-units ago). 
 \end{proof}
-This value is approximately (frequency in last $y$-unit) / (freq today + $\sum\limits_{i=1}^T \frac{1}{i} *$ (frequency of hashtag $i$ $z$-units ago)).
-This seems to be a desirable function to maximize since it finds hashtags that are common in the last $y$-unit that have been comparatively infrequent in the past.  This function is good since it especially emphasizes hashtags that are different than those seen in the past few days.  This ensures that the same items do not stay trending for too long. 
+This value is approximately (frequency in last $y$-unit) / (freq current $z$-unit + $\sum\limits_{i=1}^T \frac{1}{i} *$ (frequency of hashtag $i$ $z$-units ago)).
+This seems to be a desirable function to maximize since it finds hashtags that are common in the last $y$-unit that have been comparatively infrequent in the past. This function is good since it especially emphasizes hashtags that are different than those seen in the past few $z$-units.  This ensures that the same items do not stay trending for too long. 
 
 \subsection{Runtime Analysis}
 
-Processing the insertion of a hashtag takes the following time.  It takes amortized O(d) time to update the History.  It takes expected O(1) time to check if in hash table.  
+We analyze the time require for processing the insertion of a hashtag. It takes amortized $O(d)$ time to update the History. It takes expected $O(1)$ time to check if the hashtag is in the hash table.  
 
-If it is, it requires O(1) time to increment the frequency, O(d) time to compute the new key, and O(1) amortized time to update the key since it will be nondecreasing.  
+If it is, it requires $O(1)$ time to increment the frequency, $O(d)$ time to compute the new key, and $O(1)$amortized time to update the key since it will be non-decreasing.  
 
-Otherwise, it requires O(d) time to compute the key value, O(1) time to insert the new node in the heap, and O(1) time to insert into the hash table.  
+Otherwise, it requires $O(d)$ time to compute the key value, $O(1)$ time to insert the new node in the heap, and $O(1)$ time to insert into the hash table.  
 
-Thus, our algorithm takes O(d) amortized time + expected O(1) time to process a new hashtag.
+Thus, our algorithm takes $O(d)$ amortized time $+$ expected $O(1)$ time to process a new hashtag.
 
 \begin{table}[h]
 \centering
@@ -384,34 +385,31 @@ Querying for the top $k$ trending items                                         
 \caption{Time analysis summary}
 \end{table}
 
-Processing the removal of a hashtag from the Current-Window takes the following time.  It takes O(1) time to verify that the queue is not empty.  It takes O(1) time to look at the end of the queue and verify that the timestamp + $y$ is before the current time.  It takes O(1) time in expectation to look up this hashtag and decrement its frequency.  Then, it takes O(1) time to check if the frequency is 0.
+Next we analyze the required time to process the removal of a hashtag from the Current-Window. It takes $O(1)$ time to verify that the queue is not empty.  It takes $O(1)$ time to peek at the end of the queue and verify that the timestamp $ + y$ is before the current time. It takes $O(1)$ time in expectation to look up this hashtag and decrement its frequency. Then, it takes $O(1)$ time to check if the frequency is $0$.
 
-If so, it takes O(log(s)) amortized time to delete the node in the heap and O(1) time to delete the entry in the hash table.
+If so, it takes $O(\log(s))$ amortized time to delete the node in the heap and $O(1)$ time to delete the entry in the hash table.
 
-Otherwise, it takes O(d) amortized time to compute the new key for the hash table and O(log(s)) amortized time to update the heap given this key.
+Otherwise, it takes $O(d)$ amortized time to compute the new key for the hash table and $O(\log(s))$ amortized time to update the heap given this key.
 
-Thus, our algorithm requires O(log(s)) amortized time + expected O(1) time  + O(d) time to remove a hashtag from the Current-Window.
+Thus, our algorithm requires $O(\log(s))$ amortized time $+$ expected $O(1)$ time  $+ O(d)$ time to remove a hashtag from the Current-Window.
 
-The end-of-day updates to the History and the resulting updates to the heap take the following time.  By Lemma 5 of the Hokusai paper, the amortized time required to do all end-of-day aggregation is O(md).  Then, for each of the s nodes in the heap, it takes O(d) time to compute each updated key and O(log(s)) amortized time to update the heap given the new key.
+Now we analyze the time due to the end-of-day updates to the History and the resulting updates to the heap. By Lemma $5$ of the Hokusai paper, the amortized time required to do all end-of-day aggregation is $O(md)$. Then, for each of the $s$ nodes in the heap, it takes $O(d)$ time to compute each updated key and $O(\log(s))$ amortized time to update the heap given the new key.
 
-Thus, it takes O(md + slog(s)) amortized time + O(ds) time to do all necessary updates at the end of the day.
+Thus, it takes $O(md + slog(s))$ amortized time $+ O(ds)$ time to do all necessary updates at the end of the day.
 
-Querying the data structure for the top k trending items takes O(k*log(s)) amortized time for delete-max operations, O(k) time to announce that these items are trending, and O(k) amortized time to reinsert these nodes into the heap.
+Querying the data structure for the top $k$ trending items takes $O(k*log(s))$ amortized time for $\textbf{delete-max}$ operations, $O(k)$ time to announce that these items are trending, and $O(k)$ amortized time to reinsert these nodes into the heap.
 
-Thus, it takes O(k*log(s)) amortized time to determine what’s trending.
+Thus, it takes $O(k*log(s))$ amortized time to determine what is trending.
 
 
 \subsection{Spatial Analysis}
 
-The History requires O(md) space for each Count-Min sketch, so it requires a total of O(md*log(T)) space.
+The History requires $O(md)$ space for each Count-Min sketch, so it requires a total of $O(md*\log(T))$ space.
+Each node in the heap requires a constant amount of space, so the heap requires $O(s)$ space.
+The hash table always contains at most $s$ entries with each entry requiring a constant amount of space.  Also, in order to maintain an expected $O(1)$ lookup time, the hash table needs to have $O(s)$ bins.  Thus, the hash table requires $O(s)$ space.
+The queue requires an entry for every hashtag still in the current window, so it requires $O(x)$ space.
 
-Each node in the heap requires a constant amount of space, so the heap requires O(s) space.
-
-The hash table always contains at most s entries with each entry requiring a constant amount of space.  Also, in order to maintain an expected O(1) lookup time, the hash table needs to have O(s) bins.  Thus, the hash table requires O(s) space.
-
-The queue requires an entry for every hashtag still in the current window, so it requires O(x) space.
-
-Thus, everything requires O(md*log(T) + x) space since s $<$ x.
+Thus, everything requires $O(md*\log(T) + x)$ space since $s < x$.
 
 %------------------------------------------------
 
@@ -423,16 +421,26 @@ For $y$, the unit time period we attempted to find the trending hashtags for, we
 For $z$, the unit time period for the History data structure, we chose day-length intervals. These values made sense because the testing data we used occurred over a $30$-day interval, and we wanted to avoid too fine a temporal resolution so that we could run our code on the data in reasonable time.
 
 \subsection{Parameters of the History Data Structure}
-		pick some parameters here
-		n = 6, m = 3500 (size of hash tables), d = 20 (number of tables)
-		n: we do it for a month, so $\sim 2^{(6-1)}$ days is definitely enough
-		m = ceiling(e/epsilon), d = ceiling(ln(1/delta))
-		error in query is in factor epilson with probability 1 - delta
-		for d = 20, we have with high probability (1 - 1/$e^{20}$)
-		we have error factor of e/3500 of the total number of hashtags
-		total number of hashtags is $\sim$ 15 million
-		thus error bounds are in range $\sim$ 12000 on a given count
-		this error provides a 'good' amount of smoothing
+Since $T = 30$ (our data is for the month of September $2014$, therefore $\sim 2^{(6-1)}$ days is definitely enough), we store $6$ Count-Min
+sketches in the Hokusai portion of the History data structure, with an extra Count-Min 
+sketch for the Kernel. 
+
+Each of these CM sketches has $m = 3500$ and $d = 20$. From the proof of CM sketch, we have that
+
+\begin{equation}
+\label{eq:error_control}
+m = \lceil \frac{e}{\epsilon} \rceil
+\end{equation}
+
+and 
+
+\begin{equation}
+\label{eq:certainty_control}
+d = \lceil \textnormal{ln}(\frac{1}{\delta}) \rceil
+\end{equation}
+
+where the error in the query is in factor of $epsilon$ with probability $1 - \delta$. By Theorem $1$ in \cc{Matusevych:2012}, we have that if $n_x$ is the true count of a hashtag stored in the CM sketch, and $c_x$ is the estimate, we are guaranteed $n_x \leq c_x \leq n_x + \epsilon \sum_{x'} n_{x'}$. 
+By choosing $m = 3500$, we have that $\epsilon = \frac{e}{3500}$ and $1 - \delta = 1 - \frac{1}{e^{20}}$, which is to say that we are within that error with very high probability. The error term is a multiplier on the total number of hashtags, of which there are $\sim 15$ million, as an upper bound. Thus we are within very high probability of the true count with range $\sim 12000$, on a given count. As a result, by storing less memory and keeping the memory down more, we get some amount of smoothing for free. 
 
 \subsection{Choosing the Flavor of Heap}
 
@@ -453,27 +461,18 @@ that they were in fact trending at that time using news and Twitter media.
 
 \section{Results}
 
-\subsection{Performance Measurements}
+\subsection{Runtime Measurements}
 
 We use the space complexities of the data structures and the sizes of the 
 respective inputs to determine approximately how much space is used by each
-approach, and compare them. 
-
-\subsubsection{Naive Algorithm}
-
-Space measurements (running on one week's worth of hashtags) (estimate 6 hours worth of hashtags)
-
-Time (running over one week): $\sim 15$ minutes
-
-\subsubsection{History-Sensitive Algorithm}
-
-(we had to build a history over the first three weeks of the month
- in order to determine the History data structure's values for the week we ran
- the algorithm over)
-
-Space measurements (running on one week's worth of hashtags):
-
-Time (running over one week): $2 - 3$ hours
+approach, and compare them. The naive algorithm's runtime on one week's worth
+of hashtags was $\sim 15$ minutes. Note that the naive algorithm did not have 
+to take into account the previous $3$ weeks, since it only ever depended on 
+the frequencies from $3$ hours before the present time. The history-sensitive
+algorithm on the other hand first had to build a history from the first three
+weeks of the month before running on the last week for comparison to the naive
+algorithm. The total running time for the history-sensitive algorithm was $
+\sim 2$ hours.
 
 \subsection{Are the Algorithm Outputs Actually Trending?}
 
@@ -533,25 +532,30 @@ As we can see in the figure, our algorithm detected the start of the TV show "Ho
 
 \subsection{Comparison of Naive and History-Sensitive Algorithms}
 
-observed that history-sensitive 
-did about the same in terms of getting trending tweets (based on Jaccard), 
-but naive uses much less space. 
+Based on the approximately normal, centered distribution of the Jaccard similarities, we observe that history-sensitive performed about as well as the naive approach in terms of getting trending tweets. However, the naive algorithm uses considerably less space and time (since we only need to check the 
+$y$-unit before the current $y$-unit) to get similar results. Thus we conclude that the space efficiency of the naive approach outweighs the benefits of the history-sensitive approach for this particular task. 
+is likely superior to the history-sensitive approach. Furthermore, in our development of the history-sensitive algorithm, utilized larger errors and smoothing to perform decently, suggesting that
+our approach to evaluating the history may not be the best one for tweet-trending detection. 
 
-given such high jaccard values, space efficiency of the naive approach 
-outweighs the benefits of the history-sensitive approach for this particular task.
+However, we note that from inspection the history-sensitive algorithm has more staying power than 
+the naive approach. While in the naive approach, it is rare for adjacent $y$-units to have the same
+trending tweets, it is a more common occurrence in the history-sensitive approach when it makes sense (for instance, there was an event going on for the whole day: the naive algorithm would immediately reduce showing the hashtags related to that event, while the history-sensitive algorithm would not discard that
+hashtag so easily).
 
 \subsection{Applicability to Real-Time Data}
 
-do well to get month's worth of data in a few hours (2-3)
+In this paper, we only simulated our algorithm running on live data, since we did not 
+have good access to the live Twitter firehose. In terms of performance, despite being overshadowed
+by the simpler naive method due to their similar behavior (capturing a fair number of the same hashtags), 
+the history-sensitive algorithm did decently well. It took a few hours to run our algorithm 
+on a $15$ million hashtag dataset, with relatively large data structures to be updated and run in Python no less, a slower language.
 
-implementation wouldnt run in python, do it in C or something
+Were we to apply our algorithm to real-world real-time data, we would re-implement our code into C or another space and time efficient language. 
 
-for real data from firehose (all of it), we would use 
-better infrastructure dedicated to processing all the data
-would use parallel setup (this scheme is adaptable to parallel
-setup)
+Furthermore, for real data from all of the Twitter firehose, we would require a better hardware infrastructure dedicated to processing all the data. Ideally we would use distributed systems and would
+parallelize our code before running it. The fact that the code is broken up into disparate parts make it easier to implement in parallel.
 
-seems reasonable if we have proper data storage setup.
+Therefore, given some adjustments, the algorithms developed in this paper open the doors to new exploration of topic modeling the Twitter data stream.
 
 
 %------------------------------------------------
@@ -570,7 +574,7 @@ Future work could also investigate the performance of the history-sensitive algo
 
 \section{Appendix I: Code and Visualizations} \label{sec:Appendix_code_viz}
 
-We provide a link to \href{https://github.com/kiranvodrahalli/cos521/}{all our code}, as well as to an online hosting of the \href{http://www.princeton.edu/~awlee/trends.html}{frequency visualization}.
+We provide a link to \href{https://github.com/kiranvodrahalli/cos521/}{all our code}, as well as to an online hosting of the \href{http://www.princeton.edu/~awlee/trends.html}{frequency visualization}. In the repository, there are also the results files, Powerpoint slides, and citations for the pictures we used.
 
 In our code, we made use of two libraries written by other people, which we modified. One of these was a Count-Min sketch implementation in Python, and another was a Fibonacci heap implementation, also in Python. These program files are in our codebase, with appropriate citations at the top of each document. Furthermore, we used multiple standard Python libraries in our code.
 
@@ -611,27 +615,6 @@ Twitter, Inc. (2014).
 \newblock {\em Archive Team JSON Download of Twitter Stream 2014-09}. 
 \newblock Retrieved from \href{https://archive.org/details/twitterstream}{https://archive.org/details/twitterstream}.
 
-\bibitem[Image1]{Image1}
-\newblock BlowTheWhistle. Retrieved from \href{https://safesite.4agoodcause.com/curing-kids-cancer/donate/template_files/Blow_The_Whistle.jpg}{this link.}
-
- 
-\bibitem[Image2]{Image2}
-\newblock How to Get Away with Murder.  Retrieved from \href{http://static.east.abc.go.com/service/image/index/id/65068ab1-d543-4958-a2cc-ee366bd807db/dim/600x800.jpg}{this link.}
-
- 
-\bibitem[Image3]{Image3}
-\newblock One Direction terrorsist joke goes south for Daily Show.  Retrieved from \href{https://pbs.twimg.com/media/B52-mq-IQAEIqxz.jpg}{this link.}
-
-
-\bibitem[Image4]{Image4}
-\newblock Adrenna pic. Retrieved from \href{http://indiainf1.com/wp-content/uploads/2014/09/MRF-FF1600-BIC-28SEp2014-Adrenna-pic-300x184.jpg}{this link.}
-
- 
-\bibitem[Image5]{Image5}
-\newblock Rory Mac.  Retrieved from \href{http://i.telegraph.co.uk/multimedia/archive/03050/rorymac_3050367b.jpg}{this link.}
-
-\bibitem[Image6]{Image6}
-\newblock Derek Jeter closes his Yankee Stadium finale with walk-off single.  Retrieved from \href{http://www.foxsports.com/mlb/story/derek-jeter-closes-yankee-stadium-finale-with-walk-off-single-new-york-yankees-beat-baltimore-orioles-092514}{this link.}
  
 \end{thebibliography}
 
