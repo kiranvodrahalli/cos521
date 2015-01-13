@@ -126,20 +126,35 @@ to determine interesting phenomena ranging from the viral spread of news to the 
 \subsection{Problem Statement} 
 
 % give clear definition of problem and motivation here
+We would like to create an online algorithm for providing a real-time estimate of the frequencies of hashtags on Twitter time series data.
 
-% adapt proposal -> introduction stuff
-We would like to create an online algorithm for estimating frequencies of Twitter time series data, the stream of hashtags on tweets. The idea is that estimating the top $k$ hashtags in some time interval provides a model for the topics that are trending on Twitter in that interval.
+why we don't use raw frequency counts for the past hour:
+there are some hashtags that are constantly present (for example, #porn, #gamesinsight, #teamfollowback (a way to get Twitter followers fast))
+these should not be counted as 'trending', so we need to filter these out
+with the history. what remains is 'what is trending'
 
- Essentially, we must estimate a probability distribution for a finite set of labels in some moving time window of fixed size. Our labels will be Twitter hashtags, and we will take the window size to be 3 hours. Our aim will be to approximate the k most popular Twitter hashtags in the past 3 hours in order to tell what is trending. Some approaches attempt to do this by storing all of the frequency data, and looking at recent spikes while conditioning on all of the past frequency data in order to determine estimates of 'trending' likelihood. We would like to improve the space complexity of this solution. Our approach will differ in that we will not store all the data of the past, but instead use several Count-Min Sketches to approximate the past frequencies. We will store the exact counts for the present (3 hour window), and continuously update the past and present as new data streams in. As a side note, we plan to represent the rolling 3-hour window of frequencies as a discrete approximation: we have a bucket for every second, and update the count of the bucket in every second. When the second passes, we appropriate the bucket that represents the oldest second (i.e. 180 seconds ago) for the newest second, and thus maintain a rolling window across time for exact frequency counts in the past 3 minutes. This rolling window will be denoted as the 'present.'
+Furthermore, our estimate should not require the entire history of tweets 
 
-The baseline comparison for our performance will be the naive version of frequency tallying -- we will keep track of the entire history of frequencies, and will use the past to inform the present probability as to whether or not a given hashtag is trending. We also plan to provide a graphic of the top k hashtags, with histogram changing in real time as the estimated frequencies change. Regarding the data, we would ideally gain access to Twitter's firehose of tweets (as only a small subset of the true data is provided for those without access). 
+Essentially, we must estimate a probability distribution for a finite set of labels in some moving time window of fixed size. Our labels will be Twitter hashtags, and we will take the window size to be 3 hours.
+Our aim will be to approximate the k most popular Twitter hashtags in the past 3 hours in order to tell what is trending.
+
+The idea is that estimating the top $k$ hashtags in some time interval provides a model for the topics that are trending on Twitter in that time period.
+
 
 \subsection{Previous Work}
 
 % describe past work in the areas here
+
+Some approaches attempt to do this by storing all of the frequency data, and looking at recent spikes while conditioning on all of the past frequency data in order to determine estimates of trending likelihood. We would like to improve the space complexity of this solution. Our approach will differ in that we will not store all the data of the past, but instead use several Count-Min Sketches to approximate the past frequencies. 
+
 As a preliminary starting point for approximating the past frequencies, we will utilize concepts from 'Hokusai -- Sketching Streams in Real Time' (Matusevych et al., 2012) to generalize the Count-Min Sketch scheme to time-series data. The rough idea behind this approach is that in the distant past, we should only care about heavy-hitters, i.e. hashtags with high frequencies in order to estimate the likelihood that the hashtag is trending again.
 
+\subsection{Our Approach}
 
+
+We will store the exact counts for the present (3 hour window), and continuously update the past and present as new data streams in. As a side note, we plan to represent the rolling 3-hour window of frequencies as a discrete approximation: we have a bucket for every second, and update the count of the bucket in every second. When the second passes, we appropriate the bucket that represents the oldest second (i.e. 180 seconds ago) for the newest second, and thus maintain a rolling window across time for exact frequency counts in the past 3 minutes. This rolling window will be denoted as the present.
+
+The baseline comparison for our performance will be the naive version of frequency tallying -- we will keep track of the entire history of frequencies, and will use the past to inform the present probability as to whether or not a given hashtag is trending. We also plan to provide a graphic of the top k hashtags, with histogram changing in real time as the estimated frequencies change. Regarding the data, we would ideally gain access to Twitter's firehose of tweets (as only a small subset of the true data is provided for those without access). 
 %------------------------------------------------
 
 \section{Describing the Algorithm}

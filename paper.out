@@ -1,15 +1,16 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 1
 \BOOKMARK [2][-]{subsection.1.1}{Problem Statement}{section.1}% 2
 \BOOKMARK [2][-]{subsection.1.2}{Previous Work}{section.1}% 3
-\BOOKMARK [1][-]{section.2}{Describing the Algorithm}{}% 4
-\BOOKMARK [2][-]{subsection.2.1}{Data Structures}{section.2}% 5
-\BOOKMARK [2][-]{subsection.2.2}{Algorithm Pseudocode}{section.2}% 6
-\BOOKMARK [1][-]{section.3}{Analyzing the Algorithm}{}% 7
-\BOOKMARK [2][-]{subsection.3.1}{Correctness}{section.3}% 8
-\BOOKMARK [2][-]{subsection.3.2}{Spatial Analysis}{section.3}% 9
-\BOOKMARK [2][-]{subsection.3.3}{Runtime Analysis}{section.3}% 10
-\BOOKMARK [1][-]{section.4}{Design Choices}{}% 11
-\BOOKMARK [1][-]{section.5}{Results}{}% 12
-\BOOKMARK [1][-]{section.6}{Discussion}{}% 13
-\BOOKMARK [1][-]{section.7}{Future Work}{}% 14
-\BOOKMARK [1][-]{section.8}{Appendix I: Code}{}% 15
+\BOOKMARK [2][-]{subsection.1.3}{Our Approach}{section.1}% 4
+\BOOKMARK [1][-]{section.2}{Describing the Algorithm}{}% 5
+\BOOKMARK [2][-]{subsection.2.1}{Data Structures}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.2}{Algorithm Pseudocode}{section.2}% 7
+\BOOKMARK [1][-]{section.3}{Analyzing the Algorithm}{}% 8
+\BOOKMARK [2][-]{subsection.3.1}{Correctness}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.2}{Spatial Analysis}{section.3}% 10
+\BOOKMARK [2][-]{subsection.3.3}{Runtime Analysis}{section.3}% 11
+\BOOKMARK [1][-]{section.4}{Design Choices}{}% 12
+\BOOKMARK [1][-]{section.5}{Results}{}% 13
+\BOOKMARK [1][-]{section.6}{Discussion}{}% 14
+\BOOKMARK [1][-]{section.7}{Future Work}{}% 15
+\BOOKMARK [1][-]{section.8}{Appendix I: Code}{}% 16
