@@ -75,6 +75,11 @@ description of naive
 
 the results
 
+figure.jpg: September 24th, 2014, 6:00 Leftmost two Japanese hashtags are for 2pm and their album Go Crazy (apparently a remix version released on the 24th)
+figure2.jpg: September 29 2014, 3:00 See stuff about Snowden and security trending, along with ferguson, ebola, cowboys, and manchester united
+figure3.jpg doesn't have much, forgot why I included it
+figure2 is probably the most interesting of the three
+
 future work
 
 references

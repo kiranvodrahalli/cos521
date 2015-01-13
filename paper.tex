@@ -25,6 +25,8 @@
 \usepackage[noend]{algpseudocode}
 \usepackage{amsthm}
 
+\newtheorem{claim}{Claim} 
+
 \usepackage{graphicx}
 \graphicspath{ {figures/} }
 
@@ -117,7 +119,6 @@
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
 
-\begin{multicols}{2} % Two-column layout throughout the main article text
 
 \section{Introduction} \label{sec:Intro}
 
@@ -218,14 +219,15 @@ The queue contains (hashtag, timestamp) pairs, each of which is inserted upon se
 
 The heap has keys equal to (frequency in last $y$ minutes) / (value in Hokusai data structure) for a specific hashtag, and the value stored in the node is the corresponding hashtag.
 
+
 \subsection{Algorithm Pseudocode} 
 
-\subsubsection{Updating Hokusai data structure\label{Hokusai}}
+\subsubsection{Updating Hokusai data structure}
 
-Algorithm \ref{alg1} describes the necessary steps to maintain the Hokusai data structure as new input is provided.
+Algorithm \ref{alg1} describes the necessary steps to maintain the Hokusai data structure as new input is provided. We perform Time Aggregation. 
 
 \begin{algorithm}
-\caption{Time Aggregation for the Hokusai structure}\label{alg1}
+\caption{Update History} \label{alg1}
 \begin{algorithmic}[1]
 \ForAll {$i$}
 	\State Initialize Count-Min sketch $M^i = 0$
@@ -246,11 +248,15 @@ Algorithm \ref{alg1} describes the necessary steps to maintain the Hokusai data 
 \EndWhile
 \end{algorithmic}
 \end{algorithm}
+ 
+
 
 \subsubsection{Updating heap and hash tables}
 
+This is 2.
+
 \begin{algorithm}
-\caption{Thread to process data input.}
+\caption{Update Current-Window}\label{alg2}
 \begin{algorithmic}[1]
 \While {data arrives}
 	\If {the current day is different than that of the last hashtag seen}
@@ -285,8 +291,10 @@ Algorithm \ref{alg1} describes the necessary steps to maintain the Hokusai data 
 
 \subsubsection{Finding the trending hashtags}
 
+This is 3.
+
 \begin{algorithm}
-\caption{Algorithm to find top $k$ trending items.}
+\caption{Top $k$ trending hashtags} \label{alg3}
 \begin{algorithmic}[1]
 \State Perform $k$ delete-max operations on the Fibonacci heap, storing each of the nodes deleted in a list $L$.
 \ForAll {nodes $N$ in $L$}
@@ -301,14 +309,116 @@ Algorithm \ref{alg1} describes the necessary steps to maintain the Hokusai data 
 
 \section{Analyzing the Algorithm}
 
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+Symbol & Meaning                                                           \\ \midrule
+m      & Number of tables for each Count-Min sketch                        \\
+n      & Size of each hash table in each Count-Min sketch                  \\
+s      & Number of distinct hashtags in the Current Window                 \\
+T      & Upper bound on the number of days of data stored in History \\
+x      & Total number of hashtags in the Current Window                   \\
+y      & Minutes of data contained in the Current Window                   \\ \bottomrule
+\end{tabular}
+\caption{Variables referenced in this section}
+\end{table}
+
 \subsection{Correctness} \label{sec:Correctness}
+
+This algorithm finds the k hashtags that have the maximum value of (frequency in last y minutes) / (value in History data structure).
+
+\begin{claim}
+The value for hashtag $x$ in the aggregate Count-Min sketch of the History data structure is within a factor of 4 of $\bar{M}(x) + \sum\limits_{i=1}^T \frac{1}{i}*$ (value for $x$ in a Count-Min sketch using the same hash functions for all hashtags occurring i days ago).
+\end{claim}
+\begin{proof}
+First, we use Theorem 4 of the Hokusai paper\footnote{http://arxiv.org/pdf/1210.4891v1.pdf} which states that ``At $t$, the sketch $M^j$ contains statistics for the period $[t - \delta, t - \delta - 2^j]$ where $\delta = t \mod 2^j$.''
+
+Let $b$ be the location in the aggregate Count-Min sketch containing the value returned when $x$ is queried.
+
+Let $h$ be any instance of any hashtag that appeared on day $m$ such that seeing $h$ incremented counters in position $b$.
+
+Case 1: $m=t$
+
+Then the statistics for $h$ are recorded in $\bar{M}$ and are not in any $M^j$.
+
+Case 2: $2^i > t-m \geq 2^{i-1}$ for some $i > 0$
+
+By Theorem 4, for all $j \leq i - 2$, $M^j$ does not contain statistics for $m$ since $m \leq t - 2^{i-1} \leq t - \delta - 2^{i-2}$.
+
+Therefore, the increments that occurred in the Count-Min sketch for hashtags occurring $i$ days ago contribute at most $\sum\limits_{j = i - 1}^{T} 2^{-j} < 2^{2-i}$ to the value in position $b$.
+
+Let $k$ be the largest $j$ such that $t - \delta - 2^j \geq m$
+
+Then $m \leq t - \delta - 2^k$.  Let $\lambda = t \mod 2^{k+1}$.  Then $\lambda = \delta$ or $\lambda = \delta + 2^k$.
+
+Since $k$ is the largest $j$ such that $t - \delta - 2^j \geq m$, $m > t - \lambda - 2^{k+1}$.
+
+Also, $m \leq t - \delta - 2^k \leq t - \lambda$, so $M^{k+1}$ contains statistics about $h$.
+
+For all $j \geq i$, $t - \delta - 2^j < t - 2^j < m$, so $k \leq i - 1$. 
+
+Thus, incrementing the counter in $M^{k + 1}$ contributed at least $2^{-i}$ to the value in position $b$.
+
+Thus, the contributions to the sum are within a factor of 4 of $\frac{1}{t-m}$.
+
+Therefore, summing over all hashtags that increment counters in position $b$ gives $\bar{M}(x)$ for all hashtags that occurred on day $t$, and within a factor of 4 of $\sum\limits_{i=1}^T \frac{1}{i}*$(value for $x$ in a Count-Min sketch using the same hash functions for all hashtags occurring $i > 0$ days ago). 
+\end{proof}
+This value is approximately (frequency in last y minutes) / (freq today + $\sum\limits_{i=1}^T \frac{1}{i} *$ (frequency of hashtag i days ago)).
+This seems to be a desirable function to maximize since it finds hashtags that are common in the last y minutes that have been comparatively infrequent in the past.  This function is good since it especially emphasizes hashtags that are different than those seen in the past few days.  This ensures that the same items do not stay trending for too long. 
+
+\subsection{Runtime Analysis}
+
+Processing the insertion of a hashtag takes the following time.  It takes amortized O(m) time to update the History.  It takes expected O(1) time to check if in hash table.  
+
+If it is, it requires O(1) time to increment the frequency, O(m) time to compute the new key, and O(1) amortized time to update the key since it will be nondecreasing.  
+
+Otherwise, it requires O(m) time to compute the key value, O(1) time to insert the new node in the heap, and O(1) time to insert into the hash table.  
+
+Thus, our algorithm takes O(m) amortized time + expected O(1) time to process a new hashtag.
+
+\begin{table}[h]
+\centering
+\label{my-label}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Case                                                                                                   & Amortized Time          \\ \midrule
+Processing the insertion of a new hashtag                                                              & $O(m)$                  \\
+\begin{tabular}[c]{@{}l@{}}Processing the removal of a hashtag from \\ the Current Window\end{tabular} & $O(m + \log(s))$        \\
+\begin{tabular}[c]{@{}l@{}}Updating History and Current Window \\ at the end of a day\end{tabular}     & $O(nm + ms + s\log(s))$ \\
+Querying for the top $k$ trending items                                                                & $O(k\log(s))$           \\ \bottomrule
+\end{tabular}
+\caption{Time analysis summary}
+\end{table}
+
+Processing the removal of a hashtag from the Current Window takes the following time.  It takes O(1) time to verify that the queue is not empty.  It takes O(1) time to look at the end of the queue and verify that the timestamp + $y$ minutes is before the current time.  It takes O(1) time in expectation to look up this hashtag and decrement its frequency.  Then, it takes O(1) time to check if the frequency is 0.
+
+If so, it takes O(log(s)) amortized time to delete the node in the heap and O(1) time to delete the entry in the hash table.
+
+Otherwise, it takes O(m) amortized time to compute the new key for the hash table and O(log(s)) amortized time to update the heap given this key.
+
+Thus, our algorithm requires O(log(s)) amortized time + expected O(1) time  + O(m) time to remove a hashtag from the Current Window.
+
+The end-of-day updates to the History and the resulting updates to the heap take the following time.  By Lemma 5 of the Hokusai paper, the amortized time required to do all end-of-day aggregation is O(nm).  Then, for each of the s nodes in the heap, it takes O(m) time to compute each updated key and O(log(s)) amortized time to update the heap given the new key.
+
+Thus, it takes O(nm + slog(s)) amortized time + O(ms) time to do all necessary updates at the end of the day.
+
+Querying the data structure for the top k trending items takes O(k*log(s)) amortized time for delete-max operations, O(k) time to announce that these items are trending, and O(k) amortized time to reinsert these nodes into the heap.
+
+Thus, it takes O(k*log(s)) amortized time to determine what’s trending.
 
 
 \subsection{Spatial Analysis}
 
+The History requires O(nm) space for each Count-Min sketch, so it requires a total of O(nm*log(T)) space.
 
-\subsection{Runtime Analysis}
+Each node in the heap requires a constant amount of space, so the heap requires O(s) space.
 
+The hash table always contains at most s entries with each entry requiring a constant amount of space.  Also, in order to maintain an expected O(1) lookup time, the hash table needs to have O(s) bins.  Thus, the hash table requires O(s) space.
+
+The queue requires an entry for every hashtag still in the current window, so it requires O(x) space.
+
+Thus, everything requires O(nm*log(T) + x) space since s $<$ x.
 
 %------------------------------------------------
 
@@ -371,9 +481,8 @@ Given enough time, another data stream of interest could be Wikipedia edits -- o
 
 \section{Appendix I: Code} \label{sec:Appendix_code}
 
-We provide links to \href{https://github.com/kiranvodrahalli/cos521/}{all our code}.
+We provide a link to \href{https://github.com/kiranvodrahalli/cos521/}{all our code}, as well as to an online hosting of the \href{http://princeton.edu/~awlee/trend}{frequency visualization}.
 
-\end{multicols}
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
