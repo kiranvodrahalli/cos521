@@ -188,7 +188,7 @@ Denoting the CM sketches of the Hokusai structure as a vector $\textbf{M} = \{\o
 \textit{k}(\textbf{M}) = \overline{M} + \sum\limits_{j=0}^{{\lfloor \log⁡(T) \rfloor}} \frac{M^j}{2^j}
 \end{equation}
 
-For each hashtag, the kernel sketch stores a positive value between $0$ and $2$ (though typically $\leq 1$) that approximates how often the hashtag showed up in the past. In \nref{sec:Correctness} we will show that this aggregate Count-Min sketch weights the hashtags that occurred $i > 0$ days ago with weight approximately $\frac{1}{i}$.
+For each hashtag, the kernel sketch stores a positive value that approximates how often the hashtag showed up in the past. In \nref{sec:Correctness} we will show that this aggregate Count-Min sketch weights the hashtags that occurred $i > 0$ days ago with weight approximately $\frac{1}{i}$.
 
 We will refer to the combined data structure of Hokusai and the Kernel as the History.
 
@@ -358,7 +358,13 @@ Thus, the contributions to the sum are within a factor $4$ of $\frac{1}{t-p}$.
 
 Therefore, summing over all hashtags that increment counters in position $b$ gives $\overline{M}(x)$ for all hashtags that occurred on $z$-unit $t$, and within a factor $4$ of $\sum\limits_{i=1}^T \frac{1}{i}*$(value for $x$ in a Count-Min sketch using the same hash functions for all hashtags occurring $i > 0$ $z$-units ago). 
 \end{proof}
-This value is approximately (frequency in last $y$-unit) / (freq current $z$-unit + $\sum\limits_{i=1}^T \frac{1}{i} *$ (frequency of hashtag $i$ $z$-units ago)).
+
+Given this proof and the fact that Count-Min sketches return approximate frequency counts, we know the priority function to be approximately:
+\begin{equation} 
+\label{eq:approxpriority}
+\textbf{priority}(\textnormal{hashtag}) \approx \frac{\textbf{freq}(\textnormal{hashtag}, \textnormal{present } y \textnormal{-unit})}{\textbf{freq}(\textnormal{hashtag}, \textnormal{present } z \textnormal{-unit}) + \sum\limits_{i=1}^T \frac{1}{i}* \textbf{freq}(\textnormal{hashtag}, i \ z \textnormal{-units ago})}
+\end{equation}
+%This value is approximately (frequency in last $y$-unit) / (freq current $z$-unit + $\sum\limits_{i=1}^T \frac{1}{i} *$ (frequency of hashtag $i$ $z$-units ago)).
 This seems to be a desirable function to maximize since it finds hashtags that are common in the last $y$-unit that have been comparatively infrequent in the past. This function is good since it especially emphasizes hashtags that are different than those seen in the past few $z$-units.  This ensures that the same items do not stay trending for too long. 
 
 \subsection{Runtime Analysis}
@@ -407,7 +413,7 @@ Thus, it takes $O(k*log(s))$ amortized time to determine what is trending.
 The History requires $O(md)$ space for each Count-Min sketch, so it requires a total of $O(md*\log(T))$ space.
 Each node in the heap requires a constant amount of space, so the heap requires $O(s)$ space.
 The hash table always contains at most $s$ entries with each entry requiring a constant amount of space.  Also, in order to maintain an expected $O(1)$ lookup time, the hash table needs to have $O(s)$ bins.  Thus, the hash table requires $O(s)$ space.
-The queue requires an entry for every hashtag still in the current window, so it requires $O(x)$ space.
+The queue requires an entry for every hashtag seen in the last $y$-unit, so it requires $O(x)$ space.
 
 Thus, everything requires $O(md*\log(T) + x)$ space since $s < x$.
 

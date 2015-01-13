@@ -7,7 +7,7 @@ when the hashtag frequencies spike, the hashtags are 'trending.' The goal of our
 
 So we hope that for a selected 3 hour interval, the hashtags that our algorithms say are trending include the ones that are trending at that time in this visualization.
 
-
+Note: 28 09:00-15:00
 Regarding the problem statement:
 We would like to create an online algorithm that provides a real-time estimate of the frequencies of hashtags on Twitter time series data. Since we want to be able to run this algorithm in real time, we would like for it to be space-efficient: that is, it should not be required to store a large number of hashtag counts at any given time. Ideally, the algorithm’s space complexity should be sublinear in the number of hashtags seen. Therefore, our estimate should not require the exact frequency history of hashtags in tweets.
 
