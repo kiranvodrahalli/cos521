@@ -1,13 +1,6 @@
-Regarding the visualization of the hashtags:
 
-here we have a histogram of hashtag frequencies. We cherry-picked a set of interesting hashtags based on our observations, and then made this visualization to present the changes in frequency in 3 hour intervals over time of these hashtags.
+ALBERT:
 
-The fact that these frequencies change over time and spike and fall in turns suggests that
-when the hashtag frequencies spike, the hashtags are 'trending.' The goal of our algorithms is to identify the hashtags (of a much larger set) which are trending at a given point in time.
-
-So we hope that for a selected 3 hour interval, the hashtags that our algorithms say are trending include the ones that are trending at that time in this visualization.
-
-Note: 28 09:00-15:00 nashsnewvideo usaairwayssucks
 Regarding the problem statement:
 We would like to create an online algorithm that provides a real-time estimate of the frequencies of hashtags on Twitter time series data. Since we want to be able to run this algorithm in real time, we would like for it to be space-efficient: that is, it should not be required to store a large number of hashtag counts at any given time. Ideally, the algorithm’s space complexity should be sublinear in the number of hashtags seen. Therefore, our estimate should not require the exact frequency history of hashtags in tweets.
 
@@ -20,20 +13,27 @@ we’re remembering the past with less accuracy to save space (realistic model) 
 
 One can easily see that some reliance on historical data is necessary since there are some hashtags that are constantly present (for example, #porn, #gameinsight, #teamfollowback (a way to get Twitter followers fast)) these should not be counted as ’trending’, so we need to filter these out with the history. what remains is ’what is trending’
 
+
 Regarding the naive solution:
 We had two different algorithms for finding out which hashtags were trending in real time, both space efficient. The first algorithm, which we will describe as the naive algorithm, does not take into account the history and simply looks at the three hours before the current 3-hour interval to find the current trending hashtags. We believe that in order to accurately determine trending hashtags, we will need to use more of the past in order to eliminate the hashtags which are ever-present, and therefore not trending.
 
 However, we use this algorithm as a benchmark which we use to check if our second algorithm produces better results.
+
+KIRAN:
 
 Regarding the hokusai system explanation:
 The Hokusai structure gives frequency counts for keys over a range of time. The rough idea behind this approach is that in the distant past, we should only care about heavy-hitters, i.e. hashtags with high frequencies in order to estimate the likelihood that the hashtag is trending again. The goal of the time-aggregated Hokusai system is to store older data at decreased precision since the older data also has decreased value in the computation. The time-aggregated Hokusai system works by storing aggregate data in Count-Min sketches each with a 2^i day resolution for the past 2^i days.
 
 It maintains this system using the fact that Count-Min sketches are linear, so the structure can add two Count-Min sketches for ranges of 2^i days and get a single Count-Min sketch for a range of 2^(i+1) days.
 
+
+
 Regarding the hokusai system visualization:
 Using this property of linearity, the Hokusai structure can use a number of Count-Min sketches logarithmic in the number of time intervals for which it wishes to maintain the data.
 
 Here, you can see how the structure combines past data to maintain the desired resolution.
+
+
 
 Regarding the History-Sensitive algorithm:
 We separate the problem of finding trending topics on Twitter into two parts. First, we need to maintain a data structure that efficiently stores data about all occurrences of every hashtag seen in the past. We also maintain a separate data structure that allows us to quickly gather information about the most recent hashtags seen.
@@ -44,8 +44,12 @@ For the latter data structure, accuracy is more important than space efficiency 
 
 Finally, we use these two data structures to determine which hashtags are appearing far more than expected.
 
+
+
 Regarding History:
 To store data about all occurrences of every hashtag seen in the past, we use a modified version of the time-aggregated Hokusai system, which is an extension of the Count-Min sketch. We previously described this data structure in Previous Work. To the Hokusai structure we add another Count-Min sketch that combines the information from the Hokusai Count-Min sketches. We call this external Count-Min sketch the Kernel, since it acts as a weighting function on the CM sketches in the Hokusai structure. 
+
+EVAN:
 
 Regarding Current Window:
 Our data structure for holding hashtags seen in the last y-length time period consists of three components: a max Fibonacci heap, a queue, and a hash table. We refer to these components collectively as the Current Window.
@@ -54,13 +58,31 @@ Every unique hashtag has a node in the heap, with keys frequency in last 3 hours
 
 The maximum values in the heap are what we consider to be the most trending.
 
+
 Regarding Analysis:
 Here you can see the theoretical bounds on time and space requirements for the History sensitive algorithm.
+
+
 
 Regarding the visual evidence of the trending tweets:
 Here a view of what was trending during an 18 hour timespan during our dataset in September.
 
 You can see here that our algorithm did detect the popular events of the day such as Jeter's walkoff single in his final game at Yankee stadium or the series premiere of how to get away with murder, or the beginning of the ryder cup.
+
+ALBERT:
+
+Regarding the visualization of the hashtags:
+
+here we have a histogram of hashtag frequencies. We cherry-picked a set of interesting hashtags based on our observations, and then made this visualization to present the changes in frequency in 3 hour intervals over time of these hashtags.
+
+The fact that these frequencies change over time and spike and fall in turns suggests that
+when the hashtag frequencies spike, the hashtags are 'trending.' The goal of our algorithms is to identify the hashtags (of a much larger set) which are trending at a given point in time.
+
+So we hope that for a selected 3 hour interval, the hashtags that our algorithms say are trending include the ones that are trending at that time in this visualization.
+
+Note: 28 09:00-15:00 nashsnewvideo usaairwayssucks
+
+EVAN:
 
 Regarding Conclusions:
 We discovered that the Jacard similarity between the output produced by the naive algorithm and the history sensitive algorithm was generally high.  In our trials, the mean Jacard similarity was 0.47 with a standard deviation of 0.18.  This implies that the history sensitive algorithm still generally produces results fairly similar to the naive algorithm.
