@@ -144,15 +144,12 @@ The idea is that estimating the top $k$ hashtags in some time interval provides 
 
 Some approaches attempt to do this by storing all of the frequency data, and looking at recent spikes while conditioning on all of the past frequency data in order to determine estimates of trending likelihood. We would like to improve the space complexity of this solution. Our approach will differ in that we will not store all the data of the past, but instead use several Count-Min Sketches to approximate the past frequencies. 
 
-MIT people played with Tweet data to predict future trends. 
+MIT people played with Tweet data to predict future trends \cc{MITNews2012}. 
 
-As a preliminary starting point for approximating the past frequencies, we will utilize concepts from 'Hokusai -- Sketching Streams in Real Time' \cc{Matusevych:2012} to generalize the Count-Min Sketch scheme to time-series data. The rough idea behind this approach is that in the distant past, we should only care about heavy-hitters, i.e. hashtags with high frequencies in order to estimate the likelihood that the hashtag is trending again.
-
-We describe the Hokusai data structure here. 
-
+As a preliminary starting point for approximating the past frequencies, we will utilize concepts from Matusevych et al.'s Hokusai paper to generalize the Count-Min Sketch scheme to time-series data \cc{Matusevych:2012}. The rough idea behind this approach is that in the distant past, we should only care about heavy-hitters, i.e. hashtags with high frequencies in order to estimate the likelihood that the hashtag is trending again.
 % m is # hash, change it to d
 % n is size of each hash, change it to m
-The goal of the time-aggregated Hokusai system is to store older data at decreased precision since the older data also has decreased value in the computation.  The time-aggregated Hokusai system works by storing aggregate data in Count-Min sketches each with a $2^i$ day resolution for the past $2^i$ days.  Each of these Count-Min sketches computes $m$ hash functions from $\{0,1\}^*$ to $\{0, 1, …, n-1\}$.
+The goal of the time-aggregated Hokusai system is to store older data at decreased precision since the older data also has decreased value in the computation.  The time-aggregated Hokusai system works by storing aggregate data in Count-Min sketches each with a $2^i$ day resolution for the past $2^i$ days.  Each of these Count-Min sketches computes $m$ hash functions from $\{0,1\}^*$ to $\{0, 1, ..., n-1\}$.
 
 
 \subsection{Our Approaches}
@@ -435,7 +432,7 @@ Thus, everything requires O(nm*log(T) + x) space since s $<$ x.
 
 \section{Testing Procedure}
 
-We downloaded the \href{https://archive.org/details/twitterstream}{September $2014$ archive of Twitter data } to serve as test data for our algorithms. We then parsed the data into (timestamp, hashtag) format
+We downloaded the \href{https://archive.org/details/twitterstream}{September $2014$ archive of Twitter data } to serve as test data for our algorithms \cc{Twitter2014}. We then parsed the data into (timestamp, hashtag) format
 for all thirty days worth of data. Using these files as pseudo-real-time input, we used the last week of the data as a benchmark for comparison between the naive and the history-sensitive algorithms. We divided the data into three-hour chunks, and queried for the top ten hashtags in each of the three-hour time blocks
 in the last week of the data using both algorithms. Note that the history-senstive algorithm was required to parse through the first three weeks as well in order to build its history, whereas the naive algorithm was only required to pay attention to six-hour chunks at a time, and thus never needed to look a bit beyond the scope of that week. 
 
@@ -489,7 +486,7 @@ over the $56$ different $3$-hour intervals of the last week of September $2014$.
 
 This value gives us a metric for understanding how similarly the two algorithms performed.
 
-We plot it below in the histogram shown in \aref{fig:jaccard_sims}. The $x$-axis is the Jaccard similarity, and the $y$-axis is the count. The mean was $0.47$, and the standard Deviation was $0.18$.
+We plot it below in the histogram shown in \aref{fig:jaccard_sims}. The $x$-axis is the Jaccard similarity, and the $y$-axis is the count. The mean was $0.47$, and the standard Deviation was $0.18$. From the plot, we can see that the distribution of the Jaccard similarities is roughly a centered normal distribution around $0.5$. A Jaccard similarity of $0.5$ means about half the hashtags are the same in each $3$-hour time interval between the two algorithms. 
 
 \begin{figure}
 \centering
@@ -558,6 +555,8 @@ Future work could also investigate the performance of the history-sensitive algo
 
 We provide a link to \href{https://github.com/kiranvodrahalli/cos521/}{all our code}, as well as to an online hosting of the \href{http://www.princeton.edu/~awlee/trends.html}{frequency visualization}.
 
+In our code, we made use of two libraries written by other people, which we modified. One of these was a Count-Min sketch implementation in Python, and another was a Fibonacci heap implementation, also in Python. These program files are in our codebase, with appropriate citations at the top of each document. Furthermore, we used multiple standard Python libraries in our code.
+
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
@@ -576,12 +575,20 @@ Cormode, G., and Muthukrishnan, S. (2005).
 \newblock An improved data stream summary: The count-min sketch and its applications. 
 \newblock {\em Journal of Algorithms, 55}(1), pp. 58-75.
 
+\bibitem[MITNews2012]{MITNews2012}
+Hardesty, Larry. 
+\newblock {\em "Predicting What Topics Will Trend on Twitter."} 
+\newblock MIT News Office. MIT, 1 Nov. 2012. Web. 13 Jan. 2015. \href{http://newsoffice.mit.edu/2012/predicting-twitter-trending-topics-1101}{http://newsoffice.mit.edu/2012/predicting-twitter-trending-topics-1101}.
+
 \bibitem[Matusevych2012]{Matusevych:2012}
 Matusevych, S., Smola, A., and Ahmed, A. (2012).
 \newblock Hokusai--Sketching Streams in Real Time.
 \newblock {\em UAI '12: 28th conference on Uncertainty in Artificial Intelligence}, pp. 594-603.
 
-
+\bibitem[Twitter2014]{Twitter2014}
+Twitter, Inc. (2014). 
+\newblock {\em Archive Team JSON Download of Twitter Stream 2014-09}. 
+\newblock Retrieved from \href{https://archive.org/details/twitterstream}{https://archive.org/details/twitterstream}.
  
 \end{thebibliography}
 
