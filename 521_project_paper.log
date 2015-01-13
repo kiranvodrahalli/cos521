@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  12 JAN 2015 17:39
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  12 JAN 2015 19:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -177,18 +177,17 @@ Missing character: There is no ‚ in font cmr8!
 Missing character: There is no Å in font cmr8!
 Missing character: There is no ° in font cmr8!
  [2]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 132.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 133.
 
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 132.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 133.
 
-Overfull \hbox (12.54459pt too wide) in paragraph at lines 201--210
-[][] 
- []
+
+LaTeX Warning: `h' float specifier changed to `ht'.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -199,13 +198,13 @@ Missing character: There is no Ä in font cmr12!
 Missing character: There is no ô in font cmr12!
  [6] [7] [8] (./521_project_paper.aux) ) 
 Here is how much of TeX's memory you used:
- 1637 strings out of 493117
- 20769 string characters out of 6135433
- 87295 words of memory out of 5000000
- 5127 multiletter control sequences out of 15000+600000
+ 1638 strings out of 493117
+ 20779 string characters out of 6135433
+ 89295 words of memory out of 5000000
+ 5128 multiletter control sequences out of 15000+600000
  10507 words of font info for 38 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 27i,8n,20p,689b,305s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 27i,13n,20p,689b,305s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2014/texmf-dist/fon
 ts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2014/texmf-dist/font
 s/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2014/texmf-dist/fonts
@@ -220,7 +219,7 @@ amsfonts/cm/cmr8.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/public/ams
 fonts/cm/cmsy10.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsf
 onts/cm/cmsy8.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/public/amsfon
 ts/cm/cmti12.pfb>
-Output written on 521_project_paper.pdf (8 pages, 160128 bytes).
+Output written on 521_project_paper.pdf (8 pages, 161538 bytes).
 PDF statistics:
  83 PDF objects out of 1000 (max. 8388607)
  59 compressed objects within 1 object stream

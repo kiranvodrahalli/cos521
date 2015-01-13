@@ -97,15 +97,16 @@ For the latter data structure, accuracy is more important than space efficiency 
 
 \subsubsection{Data structure for past tweets}
 
-To store data about all occurrences of every hashtag seen in the past, we use a modified version of the time-aggregated Hokusai system\footnote{http://arxiv.org/pdf/1210.4891v1.pdf}, which is an extension of the Count-Min sketch.  This data structure is described in full detail in section \ref{Hokusai}.
+To store data about all occurrences of every hashtag seen in the past, we use a modified version of the time-aggregated Hokusai system\footnote{http://arxiv.org/pdf/1210.4891v1.pdf}, which is an extension of the Count-Min sketch.  This data structure, which we refer to as the History, is described in full detail in section \ref{Hokusai}.
 
 The goal of the time-aggregated Hokusai system is to store older data at decreased precision since the older data also has decreased value in the computation.  The time-aggregated Hokusai system works by storing aggregate data in Count-Min sketches with a $2^i$ day resolution for the past $2^i$ days.  Each of these Count-Min sketches computes $m$ hash functions from $\{0,1\}^*$ to $\{0, 1, …, n-1\}$.
 
 To this structure we add another layer that combines these Count-Min sketches into a single Count-Min sketch that depreciates the value of older data.  This aggregate Count-Min sketch stores the values $\bar{M} + \sum\limits_{j=0}^{\log⁡(T)} \frac{M^j}{2^j}$ where $\bar{M}$ is the Count-Min sketch storing today's data, $M^j$ is the Count-Min sketch storing the data for the sketch with a $2^j$ resolution, and $T$ is an upper bound on the number of days stored by the data structure.  In section \ref{Correct} we will show that this aggregate Count-Min sketch weights the hashtags that occurred $i > 0$ days ago with value approximately $\frac{1}{i}$.
 
+
 \subsubsection{Data structure for current tweets}
 
-Our data structure for holding hashtags seen in the last $y$ minutes consists of three components: a max Fibonacci heap, a queue, and a hash table.
+Our data structure for holding hashtags seen in the last $y$ minutes consists of three components: a max Fibonacci heap, a queue, and a hash table.  We refer to these components collectively as the Current Window.
 
 The keys for the hash table are the hashtags, and the values stored in the table are (frequency, pointer to corresponding node in heap) pairs.
 
@@ -204,76 +205,68 @@ Symbol & Meaning                                                           \\ \m
 m      & Number of tables for each Count-Min sketch                        \\
 n      & Size of each hash table in each Count-Min sketch                  \\
 s      & Number of distinct hashtags in the Current Window                 \\
-T      & Upper bound on the number of days worth of data stored in History \\
+T      & Upper bound on the number of days of data stored in History \\
+x      & Total number of hashtags in the Current Window                   \\
 y      & Minutes of data contained in the Current Window                   \\ \bottomrule
 \end{tabular}
 \end{table}
 \subsubsection{Time analysis}
 
 
-Time for actions when a hashtag comes in:
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+\begin{table}[h]
+\caption{Time analysis summary}
+\label{my-label}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Case                                                                                                   & Amortized Time          \\ \midrule
+Processing the insertion of a new hashtag                                                              & $O(m)$                  \\
+\begin{tabular}[c]{@{}l@{}}Processing the removal of a hashtag from \\ the Current Window\end{tabular} & $O(m + \log(s))$        \\
+\begin{tabular}[c]{@{}l@{}}Updating History and Current Window \\ at the end of a day\end{tabular}     & $O(nm + ms + s\log(s))$ \\
+Querying for the top $k$ trending items                                                                & $O(k\log(s))$           \\ \bottomrule
+\end{tabular}
+\end{table}
 
-	Takes amortized O(m) time to update Hokusai structure.
+Processing the insertion of a hashtag takes the following time.  It takes amortized O(m) time to update the History.  It takes expected O(1) time to check if in hash table.  
 
-	Takes expected O(1) time to check if in hash table.  If so:
+If it is, it requires O(1) time to increment the frequency, O(m) time to compute the new key, and O(1) amortized time to update the key since it will be nondecreasing.  
 
-		O(1) time to increment
+Otherwise, it requires O(m) time to compute the key value, O(1) time to insert the new node in the heap, and O(1) time to insert into the hash table.  
 
-		O(m) time to compute key 
-
-		O(1) amortized time to update key since key nondecreasing
-
-	Else: 
-
-		O(m) time to compute key value and O(1) time to insert node in heap
-
-		Takes O(1) time to insert into hash table. 
+Thus, our algorithm takes O(m) amortized time + expected O(1) time to process a new hashtag.
 
 
-Thus, takes O(m) amortized time + expected O(1) time to do the actions when a hashtag comes in.
+Processing the removal of a hashtag from the Current Window takes the following time.  It takes O(1) time to verify that the queue is not empty.  It takes O(1) time to look at the end of the queue and verify that the timestamp + $y$ minutes is before the current time.  It takes O(1) time in expectation to look up this hashtag and decrement its frequency.  Then, it takes O(1) time to check if the frequency is 0.
 
+If so, it takes O(log(s)) amortized time to delete the node in the heap and O(1) time to delete the entry in the hash table.
 
-Time for actions when $y$ minutes pass after a hashtag comes in:
-	O(1) time to check if queue is empty.  If not:
-		O(1) time to look at the queue and see if the timestamp + $y$ minutes is before the current time.  If so:
-			Expected O(1) time to look up in hash table and decrement the frequency.
-			O(1) time to check if frequency is 0.  If so:
-				O(log(s)) amortized time to delete node in heap.
-				O(1) time to delete entry in hash table.
-			Else:
-				O(m) amortized time to compute the 
-				O(log(s)) amortized time to update the heap given this key.
+Otherwise, it takes O(m) amortized time to compute the new key for the hash table and O(log(s)) amortized time to update the heap given this key.
 
-Thus, takes O(log(s)) amortized time + expected O(1) time  + O(m) time to do actions when a hashtag is discarded.
+Thus, our algorithm requires O(log(s)) amortized time + expected O(1) time  + O(m) time to remove a hashtag from the Current Window.
 			
 
-Time for actions when day ends:
-Takes O(nm) amortized time to do all end of day aggregation.
-Takes O(m) time to compute each key.
-Takes O(log(s)) amortized time to update each key.
+The end-of-day updates to the History and the resulting updates to the heap take the following time.  By Lemma 5 of the Hokusai paper, the amortized time required to do all end-of-day aggregation is O(nm).  Then, for each of the s nodes in the heap, it takes O(m) time to compute each updated key and O(log(s)) amortized time to update the heap given the new key.
 
-Thus, takes O(nm + slog(s)) amortized time + O(ms) time at the end of the day.
+Thus, it takes O(nm + slog(s)) amortized time + O(ms) time to do all necessary updates at the end of the day.
 
-Time for actions when finding top k trending items:
-	Takes O(k*log(s)) time for delete-max operations.
-	Takes O(k) time to announce these as trending.
-Takes O(k) amortized time to reinsert these nodes into the heap.
+Querying the data structure for the top k trending items takes O(k*log(s)) amortized time for delete-max operations, O(k) time to announce that these items are trending, and O(k) amortized time to reinsert these nodes into the heap.
 
-Thus, takes O(k*log(s)) time + O(k) amortized time to determine what’s trending.
+Thus, it takes O(k*log(s)) amortized time to determine what’s trending.
 
 
 
 \subsubsection{Space analysis}
 
-Hokusai structure takes O(nm*log(T)) space.
+The History requires O(nm) space for each Count-Min sketch, so it requires a total of O(nm*log(T)) space.
 
-Heap takes O(s) space.
+Each node in the heap requires a constant amount of space, so the heap requires O(s) space.
 
-Hash table needs O(s) space to keep expected O(1) lookup time.
+The hash table always contains at most s entries with each entry requiring a constant amount of space.  Also, in order to maintain an expected O(1) lookup time, the hash table needs to have O(s) bins.  Thus, the hash table requires O(s) space.
 
-Queue requires O(t) space. (where t max hashtags seen in y min interval)
+The queue requires an entry for every hashtag still in the current window, so it requires O(x) space.
 
-Thus, everything requires O(nm*log(T) + s + t) space.
+Thus, everything requires O(nm*log(T) + x) space since s $<$ x.
 
 \subsubsection{Correctness \label{Correct}}
 
