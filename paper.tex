@@ -110,7 +110,7 @@
 
 % introduction 
 Since its founding in $2006$, Twitter has grown into a corporation dominating a significant
-proporition of social media today. In recent years, it has become interesting to analyze tweets
+proportion of social media today. In recent years, it has become interesting to analyze tweets
 to determine interesting phenomena ranging from the viral spread of news to the detection of earthquakes \cc{Burks:2014}. The volume of existing tweets is prohibitively large for standard methods of analysis, and requires approaches that are able to either store large amounts of data in memory for fast access (including parallel approaches to data processing) or approaches that only require sublinear memory while retaining accuracy guarantees. In this paper, we investigate a problem utilizing the latter method. 
 
 \subsection{Problem Statement} 
@@ -120,7 +120,7 @@ We would like to create an online algorithm that provides a real-time estimate o
 Since we want to be able to run this algorithm in real time, we would like for it to be space-efficient: that is, it should not be required to store a large number of hashtag counts at any given time. Ideally, the algorithm's space complexity should be sublinear in the number of hashtags seen. 
 Therefore, our estimate should not require knowledge of the exact frequency history of hashtags in tweets. 
 
-More specifically, we will attempt to approximate the $k$ most popular Twitter hashtags in the time intervals of length $y$ in order to tell what is trending during that time period.
+More specifically, we will attempt to approximate the $k$ most popular Twitter hashtags in time intervals of length $y$ in order to tell what is trending during that time period.
 The idea is that estimating the top $k$ hashtags in some time interval provides a model for the topics that are trending on Twitter in that time period.
 
 
@@ -136,7 +136,7 @@ More recently in $2012$, Matusevych et al. developed the Hokusai structure, whic
 
 Analyzing what is trending on Twitter is a more recent research area. Twitter itself must give its users hashtags which it deems trending, to both spread the hashtag and to provide an awareness of what is going on in the world to its users. Knowledge of what is trending and how that distribution looks over time is also useful for the business model, which relies on ads to a certain extent.
 Twitter itself stores all of its frequency data, and looks at recent spikes while conditioning on all of the past frequency data in order to determine estimates of trending likelihood.
-In $2012$, MIT Professor Devavrat Shah built a machine-learning algorithm to predict which topics will trend on Twitter an hour and a half before they do, with $95\%$ accuracy, though the datasets they tested their algorithm on were small\cc{MITNews2012}. 
+In $2012$, MIT Professor Devavrat Shah built a machine-learning algorithm to predict which topics will trend on Twitter an hour and a half before they do, with $95\%$ accuracy, though the datasets they tested their algorithm on were small \cc{MITNews2012}. 
 
 As a preliminary starting point for our approach to approximating the past frequencies, we will utilize concepts from the Hokusai paper to generalize the Count-Min Sketch scheme to time-series data \cc{Matusevych:2012}. 
 
@@ -146,7 +146,7 @@ Our approach was to explore whether or not adding historical data would improve 
 trending hashtag detection. To that end, we implemented two algorithms: one called the naive algorithm, the other called the history-sensitive algorithm. We wanted to test whether an algorithm that uses
 the history (in condensed form) to better understand what is trending at the current time could outperform an algorithm with a very short term memory. 
 
-The reason why the history is important is as follows: Some hashtags are constantly present. For example, in our experiments, the hashtags $\#$porn, $\#$gameinsight, $\#$teamfollowback had nearly always had a high frequency in the current time unit. This fact is not surprising given the nature of the first hashtag. The second hashtag, $\#gameinsight$, is the name of popular video game maker that people tweet when they win achievements in the game. Finally, $\#teamfollowback$ is a method Twitter users apply to gather Twitter followers quickly. The rule is if you follow that tag, you follow people who post that tag. Since these sorts of tags are consistently present, they should not be consider trending: they are not new. Therefore, we need to filter these out with the history.
+The reason why the history is important is as follows: Some hashtags are constantly present. For example, in our experiments, the hashtags $\#porn$, $\#gameinsight$, $\#teamfollowback$ had nearly always had a high frequency in the current time unit. This fact is not surprising given the nature of the first hashtag. The second hashtag, $\#gameinsight$, is the name of popular video game maker that people tweet when they win achievements in the game. Finally, $\#teamfollowback$ is a method Twitter users apply to gather Twitter followers quickly. The rule is if you follow that tag, you follow people who post that tag. Since these sorts of tags are consistently present, they should not be considered trending: they are not new. Therefore, we need to filter these out with the history.
 The necessity of maintaining approximate counts for a longer history depends on exactly how constant these consistently-appearing tweets actually are. 
 
 We had two different algorithms for finding out which hashtags were trending in real time, both space efficient.
@@ -179,9 +179,9 @@ For the latter data structure, accuracy is more important than space efficiency 
 % -- we maintain datastructure in two parts: History, and Present
 \subsubsection{History Data Structure}
 
-To store data about all occurrences of every hashtag seen in the past, we use a modified version of the time-aggregated Hokusai system \cc{Matusevych:2012}, which is an extension of the Count-Min sketch. We previously described this data structure in \nref{sec:PreviousWork}. 
+To store data about all occurrences of every hashtag seen in the past, we use a modified version of the time-aggregated Hokusai system \cc{Matusevych:2012}, which is an extension of the Count-Min sketch. We already described this data structure in \nref{sec:PreviousWork}. 
 To the Hokusai structure we add another Count-Min sketch that combines the information from the Hokusai Count-Min sketches. We call this external Count-Min sketch the Kernel, since it acts as a weighting function on the CM sketches in the Hokusai structure. Its role is to depreciate the value of older data.
-Denoting the CM sketches of the Hokusai structure as a vector $\textbf{M} = \{\overline{M}, M^0, M^1, ..., M^{{\lfloor {\log(T)} \rfloor}}\}$, where $\overline{M}$ is the Count-Min sketch storing the data of a unit time step (of size $z$), $M^j$ is the Count-Min sketch storing the data for the sketch with a $2^j$ time resolution, and $T$ is an upper bound on the number of $z$-units stored by the data structure. Then, the kernel function is given by
+We denote the CM sketches of the Hokusai structure as a vector $\textbf{M} = \{\overline{M}, M^0, M^1, ..., M^{{\lfloor {\log(T)} \rfloor}}\}$, where $\overline{M}$ is the Count-Min sketch storing the data of a unit time step (of size $z$), $M^j$ is the Count-Min sketch storing the data for the sketch with a $2^j$ time resolution, and $T$ is an upper bound on the number of $z$-units stored by the data structure. Then, the kernel function is given by
 
 \begin{equation} 
 \label{eq:kernel}
@@ -224,11 +224,10 @@ Algorithm \aref{alg1} describes the necessary steps to maintain the History data
 \State Initialize $t = 0$
 \State Initialize Count-Min sketches $\overline{M} = 0$ and $K = 0$
 \While {data arrives}
-	\State Aggregate data into sketch $\overline{M}$ for current $z$-unit while also adding this data to $K$
+	\State Aggregate data into sketch $\overline{M}$ for current $z$-unit
 	\State $t \leftarrow t + 1$ (increment counter)
-	\State $K \leftarrow K - \overline{M}$
 	\For {$j = 0$ to argmax \{$l$ where $t$ mod $2^l = 0$\}}
-		\State $K \leftarrow K + 2^{-j}(\overline{M} - M^j)$
+		\State $K \leftarrow K + 2^{-j}(\overline{M} - M^j)$ (update the Kernel)
 		\State $T \leftarrow \overline{M}$ (back up temporary storage)
 		\State $\overline{M} \leftarrow \overline{M} + M^j$ (increment cumulative sum)
 		\State $M^j \leftarrow T$ (new value for $M^j$)
@@ -255,7 +254,7 @@ outdated -- that is, older than a $y$-unit before the most current piece of data
 		Algorithm \aref{alg1}.
 		\ForAll {elements in the Fibonacci heap}
 			\State look up the hashtag corresponding to this node in the hash table
-			\State Update the key of the node to: \[\frac{\textnormal{frequency in last } y-\textnormal{length time period found at the table entry}}{\textnormal{new value in History data structure}}\]
+			\State Update the key of the node to: $\textbf{priority}(\textnormal{hashtag})$
 		\EndFor
 	\EndIf
 	\If {queue is not empty}
@@ -266,7 +265,7 @@ outdated -- that is, older than a $y$-unit before the most current piece of data
 				\State Delete the node in the heap pointed to by this entry in the table.
 				\State Delete this entry in the hash table.
 			\Else	
-				\State Update the key of this node pointed to by this entry in the table to the proper value given the new frequency.
+				\State Update the key of the node with the new frequency.
 			\EndIf
 		\EndIf
 	\EndIf
@@ -563,13 +562,13 @@ Were we to apply our algorithm to real-world real-time data, we would re-impleme
 Furthermore, for real data from all of the Twitter firehose, we would require a better hardware infrastructure dedicated to processing all the data. Ideally we would use distributed systems and would
 parallelize our code before running it. The fact that the code is broken up into disparate parts makes it easier to implement in parallel.
 
-Therefore, given some adjustments, the algorithms developed in this paper open the doors to new exploration of topic modeling the Twitter data stream.
+Therefore, given some adjustments, the algorithms developed in this paper open the doors to new explorations of topic modeling the Twitter data stream.
 
 
 %------------------------------------------------
 \section{Future Work} \label{sec:Future Work}
 
-With respect to the algorithms specifically, in the future we would want to adapt our approach to the history-sensitive algorithm and play with the parameters a bit more. We would also like to try different kernel functions to see how they performed. Another approach to utilizing the history information would be instead of weighting by inverse exponentially weighted frequency in the past for a given hashtag, attempt to calculate some score of periodicity for the hashtag. If the hashtag has low periodicity over a given time scale, then even if it appears multiple times in the past (because the past is long), our algorithm will avoid discarding it as non-trending.
+With respect to the algorithms specifically, in the future we would want to adapt our approach to the history-sensitive algorithm and play with the parameters a bit more. We would also like to try different kernel functions to see how they performed. Another approach to utilizing the history information would be instead of weighting by inverse-exponentially-weighted frequency in the past for a given hashtag, attempt to calculate some score of periodicity for the hashtag. If the hashtag has low periodicity over a given time scale, then even if it appears multiple times in the past, our algorithm will avoid discarding it as non-trending despite the potentially high frequency count (because the past is long).
 
 Then, we would like to try adapating our algorithms to real-time data: that is, hook up our algorithms to a significant portion of the Twitter firehose, after setting up the necessary hardware to process that amount of data. In order to aid with the processing, we would also ideally use a distributed system and parallelize
 our code for better performance.
@@ -582,11 +581,19 @@ Future work could also investigate the performance of the history-sensitive algo
 
 \section{Appendix I: Code and Visualizations} \label{sec:Appendix_code_viz}
 
-We provide a link to \href{https://github.com/kiranvodrahalli/cos521/}{all our code}, as well as to an online hosting of the \href{http://www.princeton.edu/~awlee/trends.html}{frequency visualization}. In the repository, there are also the results files, Powerpoint slides, and citations for the pictures we used.
+We provide a link to \href{https://github.com/kiranvodrahalli/cos521/}{all our code}. In the repository, there are also the results files, Powerpoint slides, and citations for the pictures we used. 
+
+We also provide a link to an online hosting of the \href{http://www.princeton.edu/~awlee/trends.html}{frequency visualization}. The frequency visualization is a histogram of hashtag frequencies, displayed over time. We cherry-picked a set of interesting hashtags based on our observations, and then made this visualization to present the changes in frequency in $3$-hour intervals over time of these hashtags.
+
+The fact that these frequencies change over time and spike and fall in turns suggests that
+when the hashtag frequencies spike, the hashtags are trending. The goal of our algorithms is to identify the hashtags (of a much larger set) which are trending at a given point in time.
+
+So we hope that for a selected $3$-hour interval, the hashtags that our algorithms say are trending include the ones that are trending at that time in this visualization.
+
 
 In our code, we made use of two libraries written by other people, which we modified. One of these was a Count-Min sketch implementation in Python, and another was a Fibonacci heap implementation, also in Python. These program files are in our codebase, with appropriate citations at the top of each document. Furthermore, we used multiple standard Python libraries in our code.
 
-\section{Appendix II: Top-$k$ Hashtags in $6$ Interesting Time Chunks} \label{sec:Appendix_topk}
+\section{Appendix II: Top-$k$ Hashtags Results} \label{sec:Appendix_topk}
 
 To see all $56$ $3$-hour intervals for both algorithms, see the results folder of our \href{https://github.com/kiranvodrahalli/cos521/}{Github}. We display the top $10$ hashtags for each $3$-hour interval for both the naive algorithm and the history-sensitive algorithm, along with their heap priorities. Note that the heap priorities span a reasonable range from $0$ to $1$, and are not clustered around $1$ or $0$, implying the algorithms are actually differentiating the hashtags as trending and not trending. 
 
