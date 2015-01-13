@@ -21,6 +21,9 @@
 
 \usepackage{mathtools}
 \usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{amsthm}
 
 \usepackage{graphicx}
 \graphicspath{ {figures/} }
@@ -141,19 +144,34 @@ Our aim will be to approximate the k most popular Twitter hashtags in the past 3
 The idea is that estimating the top $k$ hashtags in some time interval provides a model for the topics that are trending on Twitter in that time period.
 
 
-\subsection{Previous Work}
+\subsection{Previous Work} \label{sec:PreviousWork}
 
 % describe past work in the areas here
 
 Some approaches attempt to do this by storing all of the frequency data, and looking at recent spikes while conditioning on all of the past frequency data in order to determine estimates of trending likelihood. We would like to improve the space complexity of this solution. Our approach will differ in that we will not store all the data of the past, but instead use several Count-Min Sketches to approximate the past frequencies. 
 
-As a preliminary starting point for approximating the past frequencies, we will utilize concepts from 'Hokusai -- Sketching Streams in Real Time' (Matusevych et al., 2012) to generalize the Count-Min Sketch scheme to time-series data. The rough idea behind this approach is that in the distant past, we should only care about heavy-hitters, i.e. hashtags with high frequencies in order to estimate the likelihood that the hashtag is trending again.
+MIT people played with Tweet data to predict future trends. 
+
+As a preliminary starting point for approximating the past frequencies, we will utilize concepts from 'Hokusai -- Sketching Streams in Real Time' \cc{Matusevych:2012} to generalize the Count-Min Sketch scheme to time-series data. The rough idea behind this approach is that in the distant past, we should only care about heavy-hitters, i.e. hashtags with high frequencies in order to estimate the likelihood that the hashtag is trending again.
+
+We describe the Hokusai data structure here. 
+
+% m is # hash, change it to d
+% n is size of each hash, change it to m
+The goal of the time-aggregated Hokusai system is to store older data at decreased precision since the older data also has decreased value in the computation.  The time-aggregated Hokusai system works by storing aggregate data in Count-Min sketches each with a $2^i$ day resolution for the past $2^i$ days.  Each of these Count-Min sketches computes $m$ hash functions from $\{0,1\}^*$ to $\{0, 1, …, n-1\}$.
+
 
 \subsection{Our Approach}
 
 
-We will store the exact counts for the present (3 hour window), and continuously update the past and present as new data streams in. As a side note, we plan to represent the rolling 3-hour window of frequencies as a discrete approximation: we have a bucket for every second, and update the count of the bucket in every second. When the second passes, we appropriate the bucket that represents the oldest second (i.e. 180 seconds ago) for the newest second, and thus maintain a rolling window across time for exact frequency counts in the past 3 minutes. This rolling window will be denoted as the present.
+We will store the exact counts for the present (3 hour window), and continuously update the past and present as new data streams in. 
 
+
+% note true anymore
+As a side note, we plan to represent the rolling 3-hour window of frequencies as a discrete approximation: we have a bucket for every second, and update the count of the bucket in every second. When the second passes, we appropriate the bucket that represents the oldest second (i.e. 180 seconds ago) for the newest second, and thus maintain a rolling window across time for exact frequency counts in the past 3 minutes. This rolling window will be denoted as the present.
+
+
+% baseline comparison description
 The baseline comparison for our performance will be the naive version of frequency tallying -- we will keep track of the entire history of frequencies, and will use the past to inform the present probability as to whether or not a given hashtag is trending. We also plan to provide a graphic of the top k hashtags, with histogram changing in real time as the estimated frequencies change. Regarding the data, we would ideally gain access to Twitter's firehose of tweets (as only a small subset of the true data is provided for those without access). 
 %------------------------------------------------
 
@@ -166,59 +184,185 @@ The baseline comparison for our performance will be the naive version of frequen
 % this means we are not trying to query the past the way Hokusai is.
 
 % how did we approach it 
-\lipsum[1]
+We separate the problem of finding trending topics on Twitter into two parts.  First, we need to maintain a data structure that efficiently stores data about all occurrences of every hashtag seen in the past.  We also maintain a separate data structure that allows us to quickly gather information about the most recent hashtags seen.
+
+We want the former data structure to be very space efficient since it must store data about a very large dataset.  For this structure, space efficiency is more important than accuracy since small deviations in such a large dataset should not be significant because the deviations in past data should not greatly affect what is currently trending.
+
+For the latter data structure, accuracy is more important than space efficiency since the structure contains data which more closely relates to which topics are currently trending and the size of the dataset is much smaller.
+
 
 \subsection{Data Structures}
 % -- we maintain datastructure in two parts: History, and Present
-\lipsum[2-3] % Dummy text
+\subsubsection{History Data Structure}
+
+To store data about all occurrences of every hashtag seen in the past, we use a modified version of the time-aggregated Hokusai system \cc{Matusevych:2012}, which is an extension of the Count-Min sketch. We previously described this data structure in \nref{sec:PreviousWork}. 
+To the Hokusai structure we add another Count-Min sketch that combines the information from the Hokusai Count-Min sketches. We call this external Count-Min sketch the Kernel, since it acts as a weighting function on the CM sketches in the Hokusai structure. Its role is to depreciate the value of older data.
+Denoting the CM sketches of the Hokusai structure as a vector $\textbf{M} = \{\overline{M}, M^0, M^1, ..., M^{{\lfloor {\log(T)} \rfloor}}\}$, where $\bar{M}$ is the Count-Min sketch storing today's data, $M^j$ is the Count-Min sketch storing the data for the sketch with a $2^j$ resolution, and $T$ is an upper bound on the number of days stored by the data structure. Then, the kernel function is given by
+
+\begin{equation} 
+\label{eq:kernel}
+\textit{k}(\textbf{M}) = \overline{M} + \sum\limits_{j=0}^{{\lfloor \log⁡(T) \rfloor}} \frac{M^j}{2^j}
+\end{equation}
+
+For each hashtag, the kernel sketch stores a positive value between $0$ and $2$ (though typically $\leq 1$) that approximates how often the hashtag showed up in the past. In \nref{sec:Correctness} we will show that this aggregate Count-Min sketch weights the hashtags that occurred $i > 0$ days ago with weight approximately $\frac{1}{i}$.
+
+We will refer to the combined data structure of Hokusai and the Kernel as the History.
+
+\subsubsection{Current-Window Data Structure}
+
+Our data structure for holding hashtags seen in the last $y$ minutes consists of three components: a max Fibonacci heap, a queue, and a hash table.  We refer to these components collectively as the Current Window.
+
+The keys for the hash table are the hashtags, and the values stored in the table are (frequency, pointer to corresponding node in heap) pairs.
+
+The queue contains (hashtag, timestamp) pairs, each of which is inserted upon seeing a hashtag in the input stream.
+
+The heap has keys equal to (frequency in last $y$ minutes) / (value in Hokusai data structure) for a specific hashtag, and the value stored in the node is the corresponding hashtag.
 
 \subsection{Algorithm Pseudocode} 
 
-\lipsum[4] % Dummy text
+\subsubsection{Updating Hokusai data structure\label{Hokusai}}
+
+Algorithm \ref{alg1} describes the necessary steps to maintain the Hokusai data structure as new input is provided.
+
+\begin{algorithm}
+\caption{Time Aggregation for the Hokusai structure}\label{alg1}
+\begin{algorithmic}[1]
+\ForAll {$i$}
+	\State Initialize Count-Min sketch $M^i = 0$
+\EndFor
+\State Initialize $t = 0$
+\State Initialize Count-Min sketches $\bar{M} = 0$ and $A = 0$
+\While {data arrives}
+	\State Aggregate data into sketch $\bar{M}$ for current day while also adding this data to $A$
+	\State $t \leftarrow t + 1$ (increment counter)
+	\State $A \leftarrow A - \bar{M}$
+	\For {$j = 0$ to argmax \{$l$ where $t$ mod $2^l = 0$\}}
+		\State $A \leftarrow A + 2^{-j}(\bar{M} - M^j)$
+		\State $T \leftarrow \bar{M}$ (back up temporary storage)
+		\State $\bar{M} \leftarrow \bar{M} + M^j$ (increment cumulative sum)
+		\State $M^j \leftarrow T$ (new value for $M^j$)
+	\EndFor
+	\State $\bar{M} \leftarrow 0$ (reset aggregator)
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Updating heap and hash tables}
+
+\begin{algorithm}
+\caption{Thread to process data input.}
+\begin{algorithmic}[1]
+\While {data arrives}
+	\If {the current day is different than that of the last hashtag seen}
+		\State Do all the end-of-day aggregation for the Hokusai structure as detailed in Algorithm \ref{alg1}.
+		\ForAll {elements in the Fibonacci heap}
+			\State look up the hashtag corresponding to this node in the hash table
+			\State Update the key of the node to: \[\frac{\text{frequency in last y minutes found at the table entry}}{\text{new value in Hokusai data structure}}\]
+		\EndFor
+	\EndIf
+	\If {queue is not empty}
+		\State Peek at end of queue.
+		\If {the timestamp + $y$ minutes is before the current time}
+			\State Look up the hashtag in the hash table and decrement the stored frequency.
+			\If {the frequency is now 0}
+				\State Delete the node in the heap pointed to by this entry in the table.
+				\State Delete this entry in the hash table.
+			\Else	
+				\State Update the key of this node pointed to by this entry in the table to the proper value given the new frequency.
+			\EndIf
+		\EndIf
+	\EndIf
+	\If {hashtag is in hash table}
+		\State Increment the frequency stored at that entry.
+		\State Update the key of the node in the Fibonacci heap.
+	\Else
+		\State Insert a new node into the Fibonacci heap with the appropriate key and value. 
+		\State Insert the hashtag into the hash table with a pointer to this node.
+ 	\EndIf
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Finding the trending hashtags}
+
+\begin{algorithm}
+\caption{Algorithm to find top $k$ trending items.}
+\begin{algorithmic}[1]
+\State Perform $k$ delete-max operations on the Fibonacci heap, storing each of the nodes deleted in a list $L$.
+\ForAll {nodes $N$ in $L$}
+	\State Announce that the hashtag associated with $N$ is trending.
+	\State Insert $N$ into the Fibonacci heap.
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
 
 %------------------------------------------------
 
 \section{Analyzing the Algorithm}
 
-\lipsum[1]
+\subsection{Correctness} \label{sec:Correctness}
 
-\subsection{Correctness}
-
-\lipsum[2-3]
 
 \subsection{Spatial Analysis}
 
-\lipsum[2-3]
 
 \subsection{Runtime Analysis}
 
-\lipsum[2-3]
 
 %------------------------------------------------
 
 \section{Design Choices}
 
-\lipsum[1]
+% y is 3 hours, z is 1 day
+\subsection{Choosing the parameters $y$ and $z$}
+
+\subsection{Parameters of the History Data Structure}
+
+\subsection{Choosing the Flavor of Heap}
+
+\subsection{Choosing the Current-Window Heap Function}
 
 %------------------------------------------------
 
 \section{Results}
 
+\subsection{Performance Measurements}
 
-\lipsum[5] % Dummy text
+\subsubsection{Naive Algorithm}
 
-\begin{equation}
-\label{eq:emc}
-e = mc^2
-\end{equation}
+space measurements (running on one month's worth)
 
-\lipsum[6] % Dummy text
+time (running over one month): a few hours
+
+\subsubsection{Space-Efficient Algorithm}
+
+space measurements (running on one month's worth)
+
+time (running over one month): a few hours
+
+\subsection{Are the Algorithm Outputs Actually Trending?}
+
+\subsubsection{Naive Algorithm}
+
+\subsubsection{Space-Efficient Algorithm}
+
 
 %------------------------------------------------
 
 \section{Discussion}
 
-\lipsum[7] % Dummy text
+do well to get month's worth of data in a few hours (2-3)
+
+implementation wouldnt run in python, do it in C or something
+
+for real data from firehose (all of it), we would use 
+better infrastructure dedicated to processing all the data
+would use parallel setup (this scheme is adaptable to parallel
+setup)
+
+seems reasonable if we have proper data storage setup.
+
 
 %------------------------------------------------
 \section{Future Work} \label{sec:Future Work}
