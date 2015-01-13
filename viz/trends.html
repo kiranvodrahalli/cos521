@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Trending on Twitter</title>
+    <link rel="stylesheet" href="jquery-ui.css">
+    <style>
+      body {
+        background: #333;
+      }
+      canvas {
+        margin: 0 auto;
+        display: block;
+      }
+      #slider {
+        width: 80%;
+        margin: 0 auto;
+        margin-top: 30px;
+      }
+      #time {
+        width: 80%;
+        margin: 0 auto;
+        color: #eee;
+      }
+      .ui-widget-content {
+        background: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="trending-chart" width="1200" height="600"></canvas>
+    <div id="time">September 24th, 0:00</div>
+    <div id="slider"></div>
+
+    <script src="chart.min.js"></script>
+    <script src="jquery-1.10.2.js"></script>
+    <script src="jquery-ui.js"></script>
+    <script src="trending.js"></script>
+  </body>
+</html>
