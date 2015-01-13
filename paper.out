@@ -26,11 +26,10 @@
 \BOOKMARK [3][-]{subsubsection.6.1.2}{History-Sensitive Algorithm}{subsection.6.1}% 26
 \BOOKMARK [2][-]{subsection.6.2}{Are the Algorithm Outputs Actually Trending?}{section.6}% 27
 \BOOKMARK [3][-]{subsubsection.6.2.1}{The Intersection Distribution}{subsection.6.2}% 28
-\BOOKMARK [3][-]{subsubsection.6.2.2}{History-Sensitive Algorithm}{subsection.6.2}% 29
-\BOOKMARK [3][-]{subsubsection.6.2.3}{Naive Algorithm}{subsection.6.2}% 30
-\BOOKMARK [1][-]{section.7}{Discussion}{}% 31
-\BOOKMARK [2][-]{subsection.7.1}{Comparison of Naive and History-Sensitive Algorithms}{section.7}% 32
-\BOOKMARK [2][-]{subsection.7.2}{Applicability to Real-Time Data}{section.7}% 33
-\BOOKMARK [1][-]{section.8}{Future Work}{}% 34
-\BOOKMARK [1][-]{section.9}{Appendix I: Code and Visualizations}{}% 35
-\BOOKMARK [1][-]{section.10}{Appendix II: Top-k Hashtags in 6 Interesting Time Chunks}{}% 36
+\BOOKMARK [3][-]{subsubsection.6.2.2}{Checking the Algorithm-Defined Trends Against Real Life}{subsection.6.2}% 29
+\BOOKMARK [1][-]{section.7}{Discussion}{}% 30
+\BOOKMARK [2][-]{subsection.7.1}{Comparison of Naive and History-Sensitive Algorithms}{section.7}% 31
+\BOOKMARK [2][-]{subsection.7.2}{Applicability to Real-Time Data}{section.7}% 32
+\BOOKMARK [1][-]{section.8}{Future Work}{}% 33
+\BOOKMARK [1][-]{section.9}{Appendix I: Code and Visualizations}{}% 34
+\BOOKMARK [1][-]{section.10}{Appendix II: Top-k Hashtags in 6 Interesting Time Chunks}{}% 35

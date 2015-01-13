@@ -132,7 +132,7 @@ to determine interesting phenomena ranging from the viral spread of news to the 
 % give clear definition of problem and motivation here
 We would like to create an online algorithm that provides a real-time estimate of the frequencies of hashtags on Twitter time series data.
 Since we want to be able to run this algorithm in real time, we would like for it to be space-efficient: that is, it should not be required to store a large number of hashtag counts at any given time. Ideally, the algorithm's space complexity should be sublinear in the number of hashtags seen. 
-Therefore, our estimate should not require the exact frequency history of hashtags in tweets. 
+Therefore, our estimate should not require knowledge of the exact frequency history of hashtags in tweets. 
 
 More specifically, we will attempt to approximate the $k$ most popular Twitter hashtags in the time intervals of length $y$ in order to tell what is trending during that time period.
 The idea is that estimating the top $k$ hashtags in some time interval provides a model for the topics that are trending on Twitter in that time period.
@@ -141,18 +141,30 @@ The idea is that estimating the top $k$ hashtags in some time interval provides 
 \subsection{Previous Work} \label{sec:PreviousWork}
 
 % describe past work in the areas here
+Estimating frequencies with high probability and low space complexity has been an interest in
+algorithms development for a fair amount of time. The Count-Min sketch, developed in the early $2000$s,
+provided an approximate data structure able to maintain counts of keys seen in an online setting in space sublinear to the number of keys, with the size of the structure instead dependent on parameters tunable for different accuracy and guarantee settings \cc{Cormode:2005}.
 
-Some approaches attempt to do this by storing all of the frequency data, and looking at recent spikes while conditioning on all of the past frequency data in order to determine estimates of trending likelihood. We would like to improve the space complexity of this solution. Our approach will differ in that we will not store all the data of the past, but instead use several Count-Min Sketches to approximate the past frequencies. 
+More recently in $2012$, Matusevych et al. developed the Hokusai structure, which gives frequency counts for keys over a range of time \cc{Matusevych:2012}. The rough idea behind this approach is that in the distant past, we should only care about heavy-hitters, i.e. hashtags with high frequencies in order to estimate the likelihood that the hashtag is trending again. The goal of the time-aggregated Hokusai system is to store older data at decreased precision since the older data also has decreased value in the computation.  The time-aggregated Hokusai system works by storing aggregate data in Count-Min sketches each with a $2^i$ day resolution for the past $2^i$ days.  Each of these Count-Min sketches computes $d$ hash functions from $\{0,1\}^*$ to $\{0, 1, ..., m-1\}$.
 
+
+Analyzing what is trending on Twitter is a more recent research area. Twitter itself must give its users hashtags which it deems trending, to both spread the hashtag and to provide an awareness of what is going on in the world to its users. Knowledge of what is trending and how that distribution looks over time is also useful for the business model, which relies on ads to a certain extent.
+Twitter itself stores all of its frequency data, and looks at recent spikes while conditioning on all of the past frequency data in order to determine estimates of trending likelihood.
 MIT people played with Tweet data to predict future trends \cc{MITNews2012}. 
 
-As a preliminary starting point for approximating the past frequencies, we will utilize concepts from Matusevych et al.'s Hokusai paper to generalize the Count-Min Sketch scheme to time-series data \cc{Matusevych:2012}. The rough idea behind this approach is that in the distant past, we should only care about heavy-hitters, i.e. hashtags with high frequencies in order to estimate the likelihood that the hashtag is trending again.
-% m is # hash, change it to d
-% n is size of each hash, change it to m
-The goal of the time-aggregated Hokusai system is to store older data at decreased precision since the older data also has decreased value in the computation.  The time-aggregated Hokusai system works by storing aggregate data in Count-Min sketches each with a $2^i$ day resolution for the past $2^i$ days.  Each of these Count-Min sketches computes $d$ hash functions from $\{0,1\}^*$ to $\{0, 1, ..., m-1\}$.
+As a preliminary starting point for approximating the past frequencies, we will utilize concepts from Matusevych et al.'s Hokusai paper to generalize the Count-Min Sketch scheme to time-series data \cc{Matusevych:2012}. We begin with their approach in the development of our own algorithms.
+
 
 
 \subsection{Our Approaches}
+
+our approach was to explore whether or not adding historical data would improve the accuracy of 
+trending hashtag detection.
+
+our goal was to make a real time query algorithm that USES
+the history (in condensed form) to help understand current time 
+we're remembering the past with less accuracy to save space (realistic model)
+in order to get good estimates of present trending
 
 why we don't use raw frequency counts for the past hour:
 there are some hashtags that are constantly present (for example, $\#$porn, $\#$gamesinsight, $\#$teamfollowback (a way to get Twitter followers fast))
@@ -165,6 +177,8 @@ We will store the exact counts for the present (3 hour window), and continuously
 
 We had two different algorithms for finding out which hashtags were trending in real time, both space efficient.
 The first algorithm, which we will describe as the naive algorithm, does not take into account the history and simply looks at the three hours before the current $3$-hour interval to find the current trending hashtags. We believe that in order to accurately determine trending hashtags, we will need to use more of the past in order to eliminate the hashtags which are ever-present, and therefore not trending. 
+
+Our approach will differ in that we will not store all the data of the past, but instead use several Count-Min Sketches to approximate the past frequencies. We call this approach the history-sensitive algorithm.
 
 
 % not true, edit accordingly 
@@ -381,7 +395,7 @@ Thus, our algorithm takes O(d) amortized time + expected O(1) time to process a 
 Case                                                                                                   & Amortized Time          \\ \midrule
 Processing the insertion of a new hashtag                                                              & $O(d)$                  \\
 \begin{tabular}[c]{@{}l@{}}Processing the removal of a hashtag from \\ the Current Window\end{tabular} & $O(d + \log(s))$        \\
-\begin{tabular}[c]{@{}l@{}}Updating History and Current Window \\ at the end of a day\end{tabular}     & $O(md + ds + s\log(s))$ \\
+\begin{tabular}[c]{@{}l@{}}Updating History and Current Window \\ at the end of a $z$-unit\end{tabular}     & $O(md + ds + s\log(s))$ \\
 Querying for the top $k$ trending items                                                                & $O(k\log(s))$           \\ \bottomrule
 \end{tabular}
 \caption{Time analysis summary}
@@ -497,14 +511,18 @@ We plot it below in the histogram shown in \aref{fig:jaccard_sims}. The $x$-axis
 \label{fig:jaccard_sims}
 \end{figure}
 
-\subsubsection{History-Sensitive Algorithm}
+\subsubsection{Checking the Algorithm-Defined Trends Against Real Life}
 
 In \aref{fig:news_vis}, we have superimposed pictures from 
 news articles that the tweets describe on a time axis, as
-the hashtag referencing the article starts trending. 
-We checked that the news was released (via Yahoo! News and Twitter)
-at around the time our algorithm says the hashtag relating to the news
-begins to trend. 
+the hashtag referencing the article starts trending. The Jaccard similarities 
+for each of these three-hour intervals were all above $0.5$, so both algorithms
+found the hashtags that we graph in the figure.
+We checked that the news was released (via Yahoo! News, Twitter, Google News, ESPN, and others)
+at around the time our algorithms say the hashtag relating to the news
+begins to trend. A fair number of the trending hashtags related to sports and TV shows. 
+
+As we can see in the figure, our algorithm detected the start of the TV show "How to Get Away With Murder", which was released on September $25$, $2014$. Another TV-related hashtag was $\#dailyshowgonetoofar$, when Jon Stewart called One Direction member Zayn Malik a terrorist (on the $26^{th}$) and caused a huge outrage. Sports events that occur real-time on TV also have the trending profile. There were three in this section of six three-hour intervals. First, Derek Jeter hit a walk-off homerun in the final time at bat on the Yankees, and naturally on Twitter, fans were excited. This event occurred on the $25^{th}$. The Ryder Cup is a major golf tournament that began on the $26^{th}$ and lasted through the $28^{th}$, and its beginning launched a wave of tweets. The last sports-related hashtag was the beginning of the ToyotaEMR car race that took place in India on September $26^{th}$. Finally, $\#blowthewhistle$ related to a kids cancer campaign that had lasted throughout September, which perhaps got a boost as September ended to raise some last minute funds.
 
 \begin{figure} 
 \centering
@@ -513,10 +531,7 @@ begins to trend.
 \label{fig:news_vis}
 \end{figure}
 
-\subsubsection{Naive Algorithm}
 
-We consider a few snapshots of duration $3$ hours each during
-the last week of the month. 
 
 %------------------------------------------------
 
@@ -524,6 +539,9 @@ the last week of the month.
 
 \subsection{Comparison of Naive and History-Sensitive Algorithms}
 
+observed that history-sensitive 
+did about the same in terms of getting trending tweets (based on Jaccard), 
+but naive uses much less space. 
 
 \subsection{Applicability to Real-Time Data}
 
