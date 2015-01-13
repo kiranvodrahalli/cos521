@@ -73,10 +73,6 @@
 \usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
 \usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
 
-\usepackage{abstract} % Allows abstract customization
-\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
-\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
-
 \usepackage{titlesec} % Allows customization of titles
 %\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
 %\renewcommand\thesubsection{\Roman{subsection}} % Roman numerals for subsections
@@ -104,16 +100,6 @@
 \begin{document}
 
 \maketitle % Insert title
-
-%----------------------------------------------------------------------------------------
-%	ABSTRACT
-%----------------------------------------------------------------------------------------
-
-\begin{abstract}
-
-\noindent \lipsum[1] % Dummy abstract text
-
-\end{abstract}
 
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
@@ -156,42 +142,30 @@ As a preliminary starting point for our approach to approximating the past frequ
 
 \subsection{Our Approaches}
 
-our approach was to explore whether or not adding historical data would improve the accuracy of 
-trending hashtag detection.
+Our approach was to explore whether or not adding historical data would improve the accuracy of 
+trending hashtag detection. To that end, we implemented two algorithms: one called the naive algorithm, the other called the history-sensitive algorithm. We wanted to test whether an algorithm that uses
+the history (in condensed form) to help understand what is trending at the current time could outperform an algorithm with a very short term memory. 
 
-our goal was to make a real time query algorithm that USES
-the history (in condensed form) to help understand current time 
-we're remembering the past with less accuracy to save space (realistic model)
-in order to get good estimates of present trending
-
-why we don't use raw frequency counts for the past hour:
-there are some hashtags that are constantly present (for example, $\#$porn, $\#$gamesinsight, $\#$teamfollowback (a way to get Twitter followers fast))
-these should not be counted as 'trending', so we need to filter these out
-with the history. what remains is 'what is trending'
-
-Essentially, we must estimate a probability distribution for a finite set of labels in some moving time window of fixed size. Our labels will be Twitter hashtags, and we will take the window size to be 3 hours.
-
-We will store the exact counts for the present (3 hour window), and continuously update the past and present as new data streams in. 
+The reason why the history is important is as follows: Some hashtags are constantly present. For example, in our experiments, the hashtags $\#$porn, $\#$gameinsight, $\#$teamfollowback had nearly always had a high frequency in the current time unit. This fact is not surprising given the nature of the first hashtag. The second hashtag, $\#gameinsight$, is the name of popular video game maker that people tweet when they win achievements in the game. Finally, $\#teamfollowback$ is a method Twitter users apply to gather Twitter followers quickly. The rule is if you follow that tag, you follow people who post that tag. Since these sorts of tags are consistently present, they should not be consider trending: they are not new. Therefore, we need to filter these out with the history.
+The necessity of maintaining approximate counts for a longer history depends on exactly how constant these consistently-appearing tweets actually are. 
 
 We had two different algorithms for finding out which hashtags were trending in real time, both space efficient.
-The first algorithm, which we will describe as the naive algorithm, does not take into account the history and simply looks at the three hours before the current $3$-hour interval to find the current trending hashtags. We believe that in order to accurately determine trending hashtags, we will need to use more of the past in order to eliminate the hashtags which are ever-present, and therefore not trending. 
+The naive algorithm does not take into account the history and simply looks at a $y$-unit before the current $y$-unit interval to find the current trending hashtags. To determine whether a hashtag was trending, we tested
 
-DESCRIBE NAIVE APPROACH IN FULL HERE AS A SUBSUBSECTION? 
+\begin{equation}
+\label{eq:threshold}
+\frac{\textbf{freq}(\textnormal{hashtag}, \textnormal{present } y \textnormal{-unit})}{\textbf{freq}(\textnormal{hashtag}, \textnormal{past } y \textnormal{-unit})} > c
+\end{equation}
 
-Our approach will differ in that we will not store all the data of the past, but instead use several Count-Min Sketches to approximate the past frequencies. We call this approach the history-sensitive algorithm.
+where $c$ is a threshold we picked to determine whether the hashtag was considered trending. We believe that in order to accurately determine trending hashtags, we will need to use more of the past in order to eliminate the hashtags which are ever-present, and therefore not trending. 
 
 
-% not true, edit accordingly 
-The baseline comparison for our performance will be the naive version of frequency tallying -- we will keep track of the entire history of frequencies, and will use the past to inform the present probability as to whether or not a given hashtag is trending. We also plan to provide a graphic of the top k hashtags, with histogram changing in real time as the estimated frequencies change. Regarding the data, we would ideally gain access to Twitter's firehose of tweets (as only a small subset of the true data is provided for those without access). 
+The second approach differs in that we do not store all the data of the past, but instead use several Count-Min Sketches to approximate the past frequencies. We call this approach the history-sensitive algorithm.
+The idea is to remember the past with less accuracy to save space, while weighting the frequency counts of a hashtag in the past appropriately. We used the rule of thumb that the more often a hashtag shows up in the past, the less likely it is trending. However, we also discount the importance of the past by weighting the times long ago less and less as time moves forward.
+
 %------------------------------------------------
 
-\section{Describing the Algorithm}
-
-% to note: our goal was to make a real time query algorithm that USES
-% the history (in condensed form) to help understand current time 
-% we're remembering the past with less accuracy to save space (realistic model)
-% in order to get good estimates of present trending
-% this means we are not trying to query the past the way Hokusai is.
+\section{Describing the History-Sensitive Algorithm and Data Structure}
 
 % how did we approach it 
 We separate the problem of finding trending topics on Twitter into two parts.  First, we need to maintain a data structure that efficiently stores data about all occurrences of every hashtag seen in the past.  We also maintain a separate data structure that allows us to quickly gather information about the most recent hashtags seen.
@@ -207,7 +181,7 @@ For the latter data structure, accuracy is more important than space efficiency 
 
 To store data about all occurrences of every hashtag seen in the past, we use a modified version of the time-aggregated Hokusai system \cc{Matusevych:2012}, which is an extension of the Count-Min sketch. We previously described this data structure in \nref{sec:PreviousWork}. 
 To the Hokusai structure we add another Count-Min sketch that combines the information from the Hokusai Count-Min sketches. We call this external Count-Min sketch the Kernel, since it acts as a weighting function on the CM sketches in the Hokusai structure. Its role is to depreciate the value of older data.
-Denoting the CM sketches of the Hokusai structure as a vector $\textbf{M} = \{\overline{M}, M^0, M^1, ..., M^{{\lfloor {\log(T)} \rfloor}}\}$, where $\bar{M}$ is the Count-Min sketch storing the data of a unit time step (of size $z$), $M^j$ is the Count-Min sketch storing the data for the sketch with a $2^j$ time resolution, and $T$ is an upper bound on the number of $z$-units stored by the data structure. Then, the kernel function is given by
+Denoting the CM sketches of the Hokusai structure as a vector $\textbf{M} = \{\overline{M}, M^0, M^1, ..., M^{{\lfloor {\log(T)} \rfloor}}\}$, where $\overline{M}$ is the Count-Min sketch storing the data of a unit time step (of size $z$), $M^j$ is the Count-Min sketch storing the data for the sketch with a $2^j$ time resolution, and $T$ is an upper bound on the number of $z$-units stored by the data structure. Then, the kernel function is given by
 
 \begin{equation} 
 \label{eq:kernel}
@@ -220,40 +194,45 @@ We will refer to the combined data structure of Hokusai and the Kernel as the Hi
 
 \subsubsection{Current-Window Data Structure}
 
-Our data structure for holding hashtags seen in the last $y$-length time period consists of three components: a max Fibonacci heap, a queue, and a hash table.  We refer to these components collectively as the Current Window.
-
+Our data structure for holding hashtags seen in the last $y$-length time period consists of three components: a max Fibonacci heap, a queue, and a hash table.  We refer to these components collectively as the Current-Window.
 The keys for the hash table are the hashtags, and the values stored in the table are (frequency, pointer to corresponding node in heap) pairs.
-
 The queue contains (hashtag, timestamp) pairs, each of which is inserted upon seeing a hashtag in the input stream.
+Then, we need to define a heap priority function, which defines what trending means for the whole data structure. 
+For a specific hashtag, we define the priority function to be
 
-The heap has keys equal to (frequency in last $y$-length time period) / (value in Hokusai data structure) for a specific hashtag, and the value stored in the node is the corresponding hashtag.
+\begin{equation} 
+\label{eq:priority}
+\textbf{priority}(\textnormal{hashtag}) = \frac{\textbf{freq}(\textnormal{hashtag}, \textnormal{present } y \textnormal{-unit})}{\textbf{History}[\textnormal{hashtag}]}
+\end{equation}
+
+The idea is that again, we want to be inversely proportional to the history, here corrected by more knowledge and clever approximation schemes to save space.
 
 
 \subsection{Algorithm Pseudocode} 
 
-\subsubsection{Updating Hokusai data structure}
+\subsubsection{Updating History Data Structure}
 
-Algorithm \ref{alg1} describes the necessary steps to maintain the Hokusai data structure as new input is provided. We perform Time Aggregation. 
+Algorithm \ref{alg1} describes the necessary steps to maintain the History data structure as new input is provided. We perform time aggregation to fill the Kernel, $K$. 
 
-\begin{algorithm}
+\begin{algorithm} 
 \caption{Update History} \label{alg1}
 \begin{algorithmic}[1]
 \ForAll {$i$}
 	\State Initialize Count-Min sketch $M^i = 0$
 \EndFor
 \State Initialize $t = 0$
-\State Initialize Count-Min sketches $\bar{M} = 0$ and $A = 0$
+\State Initialize Count-Min sketches $\overline{M} = 0$ and $K = 0$
 \While {data arrives}
-	\State Aggregate data into sketch $\bar{M}$ for current $z$-unit while also adding this data to $A$
+	\State Aggregate data into sketch $\overline{M}$ for current $z$-unit while also adding this data to $K$
 	\State $t \leftarrow t + 1$ (increment counter)
-	\State $A \leftarrow A - \bar{M}$
+	\State $K \leftarrow K - \overline{M}$
 	\For {$j = 0$ to argmax \{$l$ where $t$ mod $2^l = 0$\}}
-		\State $A \leftarrow A + 2^{-j}(\bar{M} - M^j)$
-		\State $T \leftarrow \bar{M}$ (back up temporary storage)
-		\State $\bar{M} \leftarrow \bar{M} + M^j$ (increment cumulative sum)
+		\State $K \leftarrow K + 2^{-j}(\overline{M} - M^j)$
+		\State $T \leftarrow \overline{M}$ (back up temporary storage)
+		\State $\overline{M} \leftarrow \overline{M} + M^j$ (increment cumulative sum)
 		\State $M^j \leftarrow T$ (new value for $M^j$)
 	\EndFor
-	\State $\bar{M} \leftarrow 0$ (reset aggregator)
+	\State $\overline{M} \leftarrow 0$ (reset aggregator)
 \EndWhile
 \end{algorithmic}
 \end{algorithm}
@@ -264,15 +243,16 @@ Algorithm \ref{alg1} describes the necessary steps to maintain the Hokusai data 
 
 This is 2.
 
-\begin{algorithm}
-\caption{Update Current-Window}\label{alg2}
+\begin{algorithm} 
+\caption{Update Current-Window} \label{alg2}
 \begin{algorithmic}[1]
 \While {data arrives}
 	\If {the current $z$-unit is different than that of the last hashtag seen}
-		\State Do all the end-of-$z$ aggregation for the Hokusai structure as detailed in Algorithm \ref{alg1}.
+		\State Do all the end-of-$z$ aggregation for the History structure as detailed in 
+		Algorithm \aref{alg1}.
 		\ForAll {elements in the Fibonacci heap}
 			\State look up the hashtag corresponding to this node in the hash table
-			\State Update the key of the node to: \[\frac{\textnormal{frequency in last } y-\textnormal{length time period found at the table entry}}{\textnormal{new value in Hokusai data structure}}\]
+			\State Update the key of the node to: \[\frac{\textnormal{frequency in last } y-\textnormal{length time period found at the table entry}}{\textnormal{new value in History data structure}}\]
 		\EndFor
 	\EndIf
 	\If {queue is not empty}
@@ -302,7 +282,7 @@ This is 2.
 
 This is 3.
 
-\begin{algorithm}
+\begin{algorithm} 
 \caption{Top $k$ trending hashtags} \label{alg3}
 \begin{algorithmic}[1]
 \State Perform $k$ delete-max operations on the Fibonacci heap, storing each of the nodes deleted in a list $L$.
@@ -325,11 +305,11 @@ This is 3.
 Symbol & Meaning                                                           \\ \midrule
 d      & Number of hash tables for each Count-Min sketch                        \\
 m      & Size of each hash table in each Count-Min sketch                  \\
-s      & Number of distinct hashtags in the Current Window                 \\
+s      & Number of distinct hashtags in the Current-Window                 \\
 z      & Time resolution of the unit-sized Count-Min sketches                   \\
 T      & Upper bound on the number of $z$-units of data stored in History                   \\
-x      & Total number of hashtags in the Current Window                   \\
-y      & Time interval of data contained in the Current Window                   \\ \bottomrule
+x      & Total number of hashtags in the Current-Window                   \\
+y      & Time interval of data contained in the Current-Window                   \\ \bottomrule
 \end{tabular}
 \caption{Variables referenced in this section}
 \end{table}
@@ -339,7 +319,7 @@ y      & Time interval of data contained in the Current Window                  
 This algorithm finds the $k$ hashtags that have the maximum value of (frequency in last $y$-unit) / (value in History data structure).
 
 \begin{claim}
-The value for hashtag $x$ in the aggregate Count-Min sketch of the History data structure is within a factor of 4 of $\bar{M}(x) + \sum\limits_{i=1}^T \frac{1}{i}*$ (value for $x$ in a Count-Min sketch using the same hash functions for all hashtags occurring i days ago).
+The value for hashtag $x$ in the aggregate Count-Min sketch of the History data structure is within a factor of 4 of $\overline{M}(x) + \sum\limits_{i=1}^T \frac{1}{i}*$ (value for $x$ in a Count-Min sketch using the same hash functions for all hashtags occurring i days ago).
 \end{claim}
 \begin{proof}
 First, we use Theorem $4$ in \cc{Matusevych:2012} which states that ``At $t$, the sketch $M^j$ contains statistics for the period $[t - \delta, t - \delta - 2^j]$ where $\delta = t \mod 2^j$.''
@@ -350,7 +330,7 @@ Let $h$ be any instance of any hashtag that appeared on day $p$ such that seeing
 
 Case 1: $p=t$
 
-Then the statistics for $h$ are recorded in $\bar{M}$ and are not in any $M^j$.
+Then the statistics for $h$ are recorded in $\overline{M}$ and are not in any $M^j$.
 
 Case 2: $2^i > t-p \geq 2^{i-1}$ for some $i > 0$
 
@@ -372,7 +352,7 @@ Thus, incrementing the counter in $M^{q + 1}$ contributed at least $2^{-i}$ to t
 
 Thus, the contributions to the sum are within a factor of 4 of $\frac{1}{t-p}$.
 
-Therefore, summing over all hashtags that increment counters in position $b$ gives $\bar{M}(x)$ for all hashtags that occurred on day $t$, and within a factor of 4 of $\sum\limits_{i=1}^T \frac{1}{i}*$(value for $x$ in a Count-Min sketch using the same hash functions for all hashtags occurring $i > 0$ days ago). 
+Therefore, summing over all hashtags that increment counters in position $b$ gives $\overline{M}(x)$ for all hashtags that occurred on day $t$, and within a factor of 4 of $\sum\limits_{i=1}^T \frac{1}{i}*$(value for $x$ in a Count-Min sketch using the same hash functions for all hashtags occurring $i > 0$ days ago). 
 \end{proof}
 This value is approximately (frequency in last $y$-unit) / (freq today + $\sum\limits_{i=1}^T \frac{1}{i} *$ (frequency of hashtag $i$ $z$-units ago)).
 This seems to be a desirable function to maximize since it finds hashtags that are common in the last $y$-unit that have been comparatively infrequent in the past.  This function is good since it especially emphasizes hashtags that are different than those seen in the past few days.  This ensures that the same items do not stay trending for too long. 
@@ -394,20 +374,20 @@ Thus, our algorithm takes O(d) amortized time + expected O(1) time to process a 
 \toprule
 Case                                                                                                   & Amortized Time          \\ \midrule
 Processing the insertion of a new hashtag                                                              & $O(d)$                  \\
-\begin{tabular}[c]{@{}l@{}}Processing the removal of a hashtag from \\ the Current Window\end{tabular} & $O(d + \log(s))$        \\
-\begin{tabular}[c]{@{}l@{}}Updating History and Current Window \\ at the end of a $z$-unit\end{tabular}     & $O(md + ds + s\log(s))$ \\
+\begin{tabular}[c]{@{}l@{}}Processing the removal of a hashtag from \\ the Current-Window\end{tabular} & $O(d + \log(s))$        \\
+\begin{tabular}[c]{@{}l@{}}Updating History and Current-Window \\ at the end of a $z$-unit\end{tabular}     & $O(md + ds + s\log(s))$ \\
 Querying for the top $k$ trending items                                                                & $O(k\log(s))$           \\ \bottomrule
 \end{tabular}
 \caption{Time analysis summary}
 \end{table}
 
-Processing the removal of a hashtag from the Current Window takes the following time.  It takes O(1) time to verify that the queue is not empty.  It takes O(1) time to look at the end of the queue and verify that the timestamp + $y$ is before the current time.  It takes O(1) time in expectation to look up this hashtag and decrement its frequency.  Then, it takes O(1) time to check if the frequency is 0.
+Processing the removal of a hashtag from the Current-Window takes the following time.  It takes O(1) time to verify that the queue is not empty.  It takes O(1) time to look at the end of the queue and verify that the timestamp + $y$ is before the current time.  It takes O(1) time in expectation to look up this hashtag and decrement its frequency.  Then, it takes O(1) time to check if the frequency is 0.
 
 If so, it takes O(log(s)) amortized time to delete the node in the heap and O(1) time to delete the entry in the hash table.
 
 Otherwise, it takes O(d) amortized time to compute the new key for the hash table and O(log(s)) amortized time to update the heap given this key.
 
-Thus, our algorithm requires O(log(s)) amortized time + expected O(1) time  + O(d) time to remove a hashtag from the Current Window.
+Thus, our algorithm requires O(log(s)) amortized time + expected O(1) time  + O(d) time to remove a hashtag from the Current-Window.
 
 The end-of-day updates to the History and the resulting updates to the heap take the following time.  By Lemma 5 of the Hokusai paper, the amortized time required to do all end-of-day aggregation is O(md).  Then, for each of the s nodes in the heap, it takes O(d) time to compute each updated key and O(log(s)) amortized time to update the heap given the new key.
 
@@ -436,13 +416,24 @@ Thus, everything requires O(md*log(T) + x) space since s $<$ x.
 
 % y is 3 hours, z is 1 day
 \subsection{Choosing the parameters $y$ and $z$}
-
+For $y$, the unit time period we attempted to find the trending hashtags for, we chose a $3$-hour interval.
+For $z$, the unit time period for the History data structure, we chose day-length intervals. These values made sense because the testing data we used occurred over a $30$-day interval, and we wanted to avoid too fine a temporal resolution so that we could run our code on the data in reasonable time.
 
 \subsection{Parameters of the History Data Structure}
+		pick some parameters here
+		n = 6, m = 3500 (size of hash tables), d = 20 (number of tables)
+		n: we do it for a month, so $\sim 2^{(6-1)}$ days is definitely enough
+		m = ceiling(e/epsilon), d = ceiling(ln(1/delta))
+		error in query is in factor epilson with probability 1 - delta
+		for d = 20, we have with high probability (1 - 1/$e^{20}$)
+		we have error factor of e/3500 of the total number of hashtags
+		total number of hashtags is $\sim$ 15 million
+		thus error bounds are in range $\sim$ 12000 on a given count
+		this error provides a 'good' amount of smoothing
 
 \subsection{Choosing the Flavor of Heap}
 
-\subsection{Choosing the Current-Window Heap Function}
+We chose a Fibonacci heap in the hopes that there would be a larger number of $\textbf{decrease-key}$ operations, which has a better theoretical bound in Fibonacci heaps. 
 
 %------------------------------------------------
 
@@ -560,7 +551,7 @@ seems reasonable if we have proper data storage setup.
 %------------------------------------------------
 \section{Future Work} \label{sec:Future Work}
 
-With respect to the algorithms specifically, in the future we would want to adapt our approach to the history-sensitive algorithm and play with the parameters a bit more. We would also like to try different kernel functions to see how they performed. 
+With respect to the algorithms specifically, in the future we would want to adapt our approach to the history-sensitive algorithm and play with the parameters a bit more. We would also like to try different kernel functions to see how they performed. Another approach to utilizing the history information would be instead of weighting by inverse exponentially weighted frequency in the past for a given hashtag, attempt to calculate some score of periodicity for the hashtag. If the hashtag has low periodicity over a given time scale, then even if it appears multiple times in the past (because the past is long), our algorithm will avoid discarding it as non-trending.
 
 Then, we would like to try adapating our algorithms to real-time data: that is, hook up our algorithms to a significant portion of the Twitter firehose, after setting up the necessary hardware to process that amount of data. In order to aid with the processing, we would also ideally use a distributed system and parallelize
 our code for better performance.
@@ -579,13 +570,11 @@ In our code, we made use of two libraries written by other people, which we modi
 
 \section{Appendix II: Top-$k$ Hashtags in $6$ Interesting Time Chunks} \label{sec:Appendix_topk}
 
-In [FIGURE WHATEVER] we present side-by-side the top $10$ hashtags in six $3$-hour intervals for both the naive algorithm and the history-sensitive algorithm, along with their heap priorities. Note that the heap priorities span
-a fair range from $0$ to $1$, and are not clustered around $1$ or $0$, implying the algorithms are actually differentiating the hashtags as trending and not trending. To see all $56$ $3$-hour intervals for both algorithms, see our \href{https://github.com/kiranvodrahalli/cos521/}{Github}.
+To see all $56$ $3$-hour intervals for both algorithms, see the results folder of our \href{https://github.com/kiranvodrahalli/cos521/}{Github}. We display the top $10$ hashtags for each $3$-hour interval for both the naive algorithm and the history-sensitive algorithm, along with their heap priorities. Note that the heap priorities span a reasonable range from $0$ to $1$, and are not clustered around $1$ or $0$, implying the algorithms are actually differentiating the hashtags as trending and not trending. 
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
-\newpage
 
 \begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
 
