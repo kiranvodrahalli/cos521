@@ -22,6 +22,22 @@ var trendingChart = new Chart(ctx).Bar(data, {
     scaleFontColor: '#eee'
 });
 
+
+var STEP_INCR = 3; // 3 hrs
+var curDate = new Date(2014, 8, 24);
+var dateToString = function(d) {
+    var fields = d.toString().split(':');
+    return fields[0] + ':' + fields[1];
+};
+var prevSliderVal = 0;
+
+Date.prototype.addHours = function(h) {
+    this.setHours(this.getHours() + h);
+    return this;
+};
+
+$('#time').text(dateToString(curDate));
+
 $( "#slider" ).slider({
     value: 0,
     min: 0,
@@ -34,5 +50,8 @@ $( "#slider" ).slider({
 	    trendingChart.datasets[0].bars[i].value = allData[curDataIdx][i];
 	}
 	trendingChart.update();
+	curDate.addHours((ui.value - prevSliderVal) * STEP_INCR);
+	$('#time').text(dateToString(curDate));
+	prevSliderVal = ui.value;
     }
 });
