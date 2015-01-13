@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2013.4.19)  13 JAN 2015 03:55
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2013.4.19)  13 JAN 2015 04:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -742,22 +742,22 @@ Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
 (hyperref)                removing `math shift' on input line 580.
 
 [11]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 623.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 645.
  [12]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 623.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 645.
  (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 623.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 623.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 645.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 645.
 Package rerunfilecheck Info: File `paper.out' has not changed.
 (rerunfilecheck)             Checksum: D063B5DFF6018CC4501D4663E7E577B2;2597.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 623.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 645.
  ) 
 Here is how much of TeX's memory you used:
- 11648 strings out of 493481
- 177087 string characters out of 3140986
- 397735 words of memory out of 3000000
- 14408 multiletter control sequences out of 15000+200000
- 73806 words of font info for 299 fonts, out of 3000000 for 9000
+ 11668 strings out of 493481
+ 177263 string characters out of 3140986
+ 396933 words of memory out of 3000000
+ 14414 multiletter control sequences out of 15000+200000
+ 74206 words of font info for 305 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
  36i,15n,38p,1087b,456s stack positions out of 5000i,500n,10000p,200000b,50000s
 {/usr/local/texlive/2012/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
@@ -770,10 +770,10 @@ exmf-dist/fonts/type1/public/fpl/fplrc8a.pfb></usr/local/texlive/2012/texmf-dis
 t/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2012/texmf-dist/fonts
 /type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/
 urw/palatino/uplri8a.pfb>
-Output written on paper.pdf (12 pages, 1324765 bytes).
+Output written on paper.pdf (12 pages, 1326154 bytes).
 PDF statistics:
- 291 PDF objects out of 1000 (max. 8388607)
- 263 compressed objects within 3 object streams
- 63 named destinations out of 1000 (max. 500000)
+ 305 PDF objects out of 1000 (max. 8388607)
+ 277 compressed objects within 3 object streams
+ 69 named destinations out of 1000 (max. 500000)
  55587 words of extra memory for PDF output out of 61914 (max. 10000000)
 

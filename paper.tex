@@ -150,11 +150,9 @@ More recently in $2012$, Matusevych et al. developed the Hokusai structure, whic
 
 Analyzing what is trending on Twitter is a more recent research area. Twitter itself must give its users hashtags which it deems trending, to both spread the hashtag and to provide an awareness of what is going on in the world to its users. Knowledge of what is trending and how that distribution looks over time is also useful for the business model, which relies on ads to a certain extent.
 Twitter itself stores all of its frequency data, and looks at recent spikes while conditioning on all of the past frequency data in order to determine estimates of trending likelihood.
-MIT people played with Tweet data to predict future trends \cc{MITNews2012}. 
+In $2012$, MIT Professor Devavrat Shah built a machine-learning algorithm to predict which topics will trend on Twitter an hour and a half before they do, with $95\%$ accuracy, though the datasets they tested their algorithm on were small\cc{MITNews2012}. 
 
-As a preliminary starting point for approximating the past frequencies, we will utilize concepts from Matusevych et al.'s Hokusai paper to generalize the Count-Min Sketch scheme to time-series data \cc{Matusevych:2012}. We begin with their approach in the development of our own algorithms.
-
-
+As a preliminary starting point for our approach to approximating the past frequencies, we will utilize concepts from the Hokusai paper to generalize the Count-Min Sketch scheme to time-series data \cc{Matusevych:2012}. 
 
 \subsection{Our Approaches}
 
@@ -177,6 +175,8 @@ We will store the exact counts for the present (3 hour window), and continuously
 
 We had two different algorithms for finding out which hashtags were trending in real time, both space efficient.
 The first algorithm, which we will describe as the naive algorithm, does not take into account the history and simply looks at the three hours before the current $3$-hour interval to find the current trending hashtags. We believe that in order to accurately determine trending hashtags, we will need to use more of the past in order to eliminate the hashtags which are ever-present, and therefore not trending. 
+
+DESCRIBE NAIVE APPROACH IN FULL HERE AS A SUBSUBSECTION? 
 
 Our approach will differ in that we will not store all the data of the past, but instead use several Count-Min Sketches to approximate the past frequencies. We call this approach the history-sensitive algorithm.
 
@@ -585,9 +585,9 @@ a fair range from $0$ to $1$, and are not clustered around $1$ or $0$, implying 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
+\newpage
 
 \begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
-
 
 \bibitem[Burks2014]{Burks:2014}
 Burks, L., Miller, M., and Zadeh, R. (2014). 
@@ -613,6 +613,28 @@ Matusevych, S., Smola, A., and Ahmed, A. (2012).
 Twitter, Inc. (2014). 
 \newblock {\em Archive Team JSON Download of Twitter Stream 2014-09}. 
 \newblock Retrieved from \href{https://archive.org/details/twitterstream}{https://archive.org/details/twitterstream}.
+
+\bibitem[Image1]{Image1}
+\newblock BlowTheWhistle. Retrieved from \href{https://safesite.4agoodcause.com/curing-kids-cancer/donate/template_files/Blow_The_Whistle.jpg}{this link.}
+
+ 
+\bibitem[Image2]{Image2}
+\newblock How to Get Away with Murder.  Retrieved from \href{http://static.east.abc.go.com/service/image/index/id/65068ab1-d543-4958-a2cc-ee366bd807db/dim/600x800.jpg}{this link.}
+
+ 
+\bibitem[Image3]{Image3}
+\newblock One Direction terrorsist joke goes south for Daily Show.  Retrieved from \href{https://pbs.twimg.com/media/B52-mq-IQAEIqxz.jpg}{this link.}
+
+
+\bibitem[Image4]{Image4}
+\newblock Adrenna pic. Retrieved from \href{http://indiainf1.com/wp-content/uploads/2014/09/MRF-FF1600-BIC-28SEp2014-Adrenna-pic-300x184.jpg}{this link.}
+
+ 
+\bibitem[Image5]{Image5}
+\newblock Rory Mac.  Retrieved from \href{http://i.telegraph.co.uk/multimedia/archive/03050/rorymac_3050367b.jpg}{this link.}
+
+\bibitem[Image6]{Image6}
+\newblock Derek Jeter closes his Yankee Stadium finale with walk-off single.  Retrieved from \href{http://www.foxsports.com/mlb/story/derek-jeter-closes-yankee-stadium-finale-with-walk-off-single-new-york-yankees-beat-baltimore-orioles-092514}{this link.}
  
 \end{thebibliography}
 
