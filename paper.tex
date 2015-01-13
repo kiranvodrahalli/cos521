@@ -194,10 +194,11 @@ We will refer to the combined data structure of Hokusai and the Kernel as the Hi
 
 \subsubsection{Current-Window Data Structure}
 
-Our data structure for holding hashtags seen in the last $y$-length time period consists of three components: a max Fibonacci heap, a queue, and a hash table.  We refer to these components collectively as the Current-Window.
-The keys for the hash table are the hashtags, and the values stored in the table are (frequency, pointer to corresponding node in heap) pairs.
-The queue contains (hashtag, timestamp) pairs, each of which is inserted upon seeing a hashtag in the input stream.
-Then, we need to define a heap priority function, which defines what trending means for the whole data structure. 
+Our data structure for holding hashtags seen in the last $y$-unit consists of three components: a max Fibonacci heap, a queue, and a hash table.  We refer to these components collectively as the Current-Window.
+The keys for the hash table are the hashtags, and the values stored in the table are (frequency, pointer to corresponding node in heap) pairs. The hash table exists so that we can keep track of exact frequency counts for each $y$-unit.
+The queue contains (hashtag, timestamp) pairs, each of which is inserted upon seeing a hashtag in the input stream. The purpose of the queue is to determine when a hashtag count is too old to be maintained in the present $y$-unit window.
+Finally, we have a Fibonacci heap to prioritize the hashtags based on how trending they currently are.
+We provide a heap priority function, which defines what trending means for the whole data structure. 
 For a specific hashtag, we define the priority function to be
 
 \begin{equation} 
@@ -212,7 +213,7 @@ The idea is that again, we want to be inversely proportional to the history, her
 
 \subsubsection{Updating History Data Structure}
 
-Algorithm \ref{alg1} describes the necessary steps to maintain the History data structure as new input is provided. We perform time aggregation to fill the Kernel, $K$. 
+Algorithm \aref{alg1} describes the necessary steps to maintain the History data structure as new input is provided. We perform time aggregation to fill the Kernel, $K$. This algorithm is only called when a $z$-unit has passed since the last time the algorithm was called.
 
 \begin{algorithm} 
 \caption{Update History} \label{alg1}
@@ -241,7 +242,9 @@ Algorithm \ref{alg1} describes the necessary steps to maintain the History data 
 
 \subsubsection{Updating heap and hash tables}
 
-This is 2.
+We run Algorithm \aref{alg2} in the main loop, every time a single piece of data arrives.
+For each new piece of data, we also check whether the data we are storing has grown 
+outdated -- that is, older than a $y$-unit before the most current piece of data arrived.
 
 \begin{algorithm} 
 \caption{Update Current-Window} \label{alg2}
@@ -280,7 +283,7 @@ This is 2.
 
 \subsubsection{Finding the trending hashtags}
 
-This is 3.
+We use Algorithm \aref{alg3} to calculate the top $k$ hashtags by querying the heap. The heap is the structure responsible for maintaining the priority of the various hashtags, and provides an efficient way of implementing a changing priority queue.
 
 \begin{algorithm} 
 \caption{Top $k$ trending hashtags} \label{alg3}
