@@ -144,7 +144,7 @@ As a preliminary starting point for our approach to approximating the past frequ
 
 Our approach was to explore whether or not adding historical data would improve the accuracy of 
 trending hashtag detection. To that end, we implemented two algorithms: one called the naive algorithm, the other called the history-sensitive algorithm. We wanted to test whether an algorithm that uses
-the history (in condensed form) to help understand what is trending at the current time could outperform an algorithm with a very short term memory. 
+the history (in condensed form) to better understand what is trending at the current time could outperform an algorithm with a very short term memory. 
 
 The reason why the history is important is as follows: Some hashtags are constantly present. For example, in our experiments, the hashtags $\#$porn, $\#$gameinsight, $\#$teamfollowback had nearly always had a high frequency in the current time unit. This fact is not surprising given the nature of the first hashtag. The second hashtag, $\#gameinsight$, is the name of popular video game maker that people tweet when they win achievements in the game. Finally, $\#teamfollowback$ is a method Twitter users apply to gather Twitter followers quickly. The rule is if you follow that tag, you follow people who post that tag. Since these sorts of tags are consistently present, they should not be consider trending: they are not new. Therefore, we need to filter these out with the history.
 The necessity of maintaining approximate counts for a longer history depends on exactly how constant these consistently-appearing tweets actually are. 
@@ -399,23 +399,23 @@ Otherwise, it takes $O(d)$ amortized time to compute the new key for the hash ta
 
 Thus, our algorithm requires $O(\log(s))$ amortized time $+$ expected $O(1)$ time  $+ O(d)$ time to remove a hashtag from the Current-Window.
 
-Now we analyze the time due to the end-of-day updates to the History and the resulting updates to the heap. By Lemma $5$ of the Hokusai paper, the amortized time required to do all end-of-day aggregation is $O(md)$. Then, for each of the $s$ nodes in the heap, it takes $O(d)$ time to compute each updated key and $O(\log(s))$ amortized time to update the heap given the new key.
+Now we analyze the time due to the end-of-day updates to the History and the resulting updates to the heap. By Lemma $5$ in \cc{Matusevych:2012}, the amortized time required to do all end-of-day aggregation is $O(md)$. Then, for each of the $s$ nodes in the heap, it takes $O(d)$ time to compute each updated key and $O(\log(s))$ amortized time to update the heap given the new key.
 
-Thus, it takes $O(md + slog(s))$ amortized time $+ O(ds)$ time to do all necessary updates at the end of the day.
+Thus, it takes $O(md + s\log(s))$ amortized time $+ O(ds)$ time to do all necessary updates at the end of the day.
 
-Querying the data structure for the top $k$ trending items takes $O(k*log(s))$ amortized time for $\textbf{delete-max}$ operations, $O(k)$ time to announce that these items are trending, and $O(k)$ amortized time to reinsert these nodes into the heap.
+Querying the data structure for the top $k$ trending items takes $O(k\log(s))$ amortized time for $\textbf{delete-max}$ operations, $O(k)$ time to announce that these items are trending, and $O(k)$ amortized time to reinsert these nodes into the heap.
 
-Thus, it takes $O(k*log(s))$ amortized time to determine what is trending.
+Thus, it takes $O(k\log(s))$ amortized time to determine what is trending.
 
 
 \subsection{Spatial Analysis}
 
-The History requires $O(md)$ space for each Count-Min sketch, so it requires a total of $O(md*\log(T))$ space.
+The History requires $O(md)$ space for each Count-Min sketch, so it requires a total of $O(md\log(T))$ space.
 Each node in the heap requires a constant amount of space, so the heap requires $O(s)$ space.
 The hash table always contains at most $s$ entries with each entry requiring a constant amount of space.  Also, in order to maintain an expected $O(1)$ lookup time, the hash table needs to have $O(s)$ bins.  Thus, the hash table requires $O(s)$ space.
 The queue requires an entry for every hashtag seen in the last $y$-unit, so it requires $O(x)$ space.
 
-Thus, everything requires $O(md*\log(T) + x)$ space since $s < x$.
+Thus, everything requires $O(md\log(T) + x)$ space since $s < x$.
 
 %------------------------------------------------
 
@@ -424,7 +424,7 @@ Thus, everything requires $O(md*\log(T) + x)$ space since $s < x$.
 % y is 3 hours, z is 1 day
 \subsection{Choosing the parameters $y$ and $z$}
 For $y$, the unit time period we attempted to find the trending hashtags for, we chose a $3$-hour interval.
-For $z$, the unit time period for the History data structure, we chose day-length intervals. These values made sense because the testing data we used occurred over a $30$-day interval, and we wanted to avoid too fine a temporal resolution so that we could run our code on the data in reasonable time.
+For $z$, the unit time period for the History data structure, we chose day-length intervals. These values made sense because the testing data we used occurred over a $30$-day interval, and we wanted to avoid too fine a temporal resolution so that we could run our code on the data in a reasonable amount of time.
 
 \subsection{Parameters of the History Data Structure}
 Since $T = 30$ (our data is for the month of September $2014$, therefore $\sim 2^{(6-1)}$ days is definitely enough), we store $6$ Count-Min
@@ -445,8 +445,10 @@ and
 d = \lceil \textnormal{ln}(\frac{1}{\delta}) \rceil
 \end{equation}
 
-where the error in the query is in factor of $epsilon$ with probability $1 - \delta$. By Theorem $1$ in \cc{Matusevych:2012}, we have that if $n_x$ is the true count of a hashtag stored in the CM sketch, and $c_x$ is the estimate, we are guaranteed $n_x \leq c_x \leq n_x + \epsilon \sum_{x'} n_{x'}$. 
-By choosing $m = 3500$, we have that $\epsilon = \frac{e}{3500}$ and $1 - \delta = 1 - \frac{1}{e^{20}}$, which is to say that we are within that error with very high probability. The error term is a multiplier on the total number of hashtags, of which there are $\sim 15$ million, as an upper bound. Thus we are within very high probability of the true count with range $\sim 12000$, on a given count. As a result, by storing less memory and keeping the memory down more, we get some amount of smoothing for free. 
+where the error in the query is in factor of $\epsilon$ with probability $1 - \delta$. By Theorem $1$ in \cc{Matusevych:2012}, we have that if $n_x$ is the true count of a hashtag stored in the CM sketch, and $c_x$ is the estimate, we are guaranteed $n_x \leq c_x \leq n_x + \epsilon \sum_{x'} n_{x'}$. 
+By choosing $m = 3500$, we have that $\epsilon = \frac{e}{3500}$ and $1 - \delta = 1 - \frac{1}{e^{20}}$, which is to say that we are within that error with very high probability. The error term is a multiplier on the total number of hashtags, of which there are $\sim 15$ million, as an upper bound. Thus we are within very high probability of the true count with range $\sim 12000$, on a given count. 
+
+By using less memory we increase the amount of error.  These error terms are added to the denominator of our priority function, and as a result, they prevent hashtags with very relatively low frequency from being identified as trending, which is a very desirable property.
 
 \subsection{Choosing the Flavor of Heap}
 
@@ -456,7 +458,7 @@ We chose a Fibonacci heap in the hopes that there would be a larger number of $\
 
 \section{Testing Procedure}
 
-We downloaded the \href{https://archive.org/details/twitterstream}{September $2014$ archive of Twitter data } to serve as test data for our algorithms \cc{Twitter2014}. We then parsed the data into (timestamp, hashtag) format
+We downloaded the \href{https://archive.org/details/twitterstream}{September $2014$ archive of Twitter data } to serve as test data for our algorithms \cc{Twitter2014}. We then parsed the data into (timestamp, hashtag) pairs
 for all thirty days worth of data. Using these files as pseudo-real-time input, we used the last week of the data as a benchmark for comparison between the naive and the history-sensitive algorithms. We divided the data into three-hour chunks, and queried for the top ten hashtags in each of the three-hour time blocks
 in the last week of the data using both algorithms. Note that the history-senstive algorithm was required to parse through the first three weeks as well in order to build its history, whereas the naive algorithm was only required to pay attention to six-hour chunks at a time, and thus never needed to look a bit beyond the scope of that week. 
 
@@ -501,7 +503,7 @@ over the $56$ different $3$-hour intervals of the last week of September $2014$.
 
 This value gives us a metric for understanding how similarly the two algorithms performed.
 
-We plot it below in the histogram shown in \aref{fig:jaccard_sims}. The $x$-axis is the Jaccard similarity, and the $y$-axis is the count. The mean was $0.47$, and the standard Deviation was $0.18$. From the plot, we can see that the distribution of the Jaccard similarities is roughly a centered normal distribution around $0.5$. A Jaccard similarity of $0.5$ means about half the hashtags are the same in each $3$-hour time interval between the two algorithms. 
+We plot this data in the histogram shown in \aref{fig:jaccard_sims}. The $x$-axis is the Jaccard similarity, and the $y$-axis is the count. The mean was $0.47$, and the standard Deviation was $0.18$. From the plot, we can see that the distribution of the Jaccard similarities is roughly a centered normal distribution around $0.5$. A Jaccard similarity of $0.5$ means about half the hashtags are the same in each $3$-hour time interval between the two algorithms. 
 
 \begin{figure}
 \centering
@@ -519,7 +521,7 @@ for each of these three-hour intervals were all above $0.5$, so both algorithms
 found the hashtags that we graph in the figure.
 We checked that the news was released (via Yahoo! News, Twitter, Google News, ESPN, and others)
 at around the time our algorithms say the hashtag relating to the news
-begins to trend. A fair number of the trending hashtags related to sports and TV shows. 
+begins to trend. A fair number of the trending hashtags are related to sports and TV shows. 
 
 As we can see in the figure, our algorithm detected the start of the TV show "How to Get Away With Murder", which was released on September $25$, $2014$. Another TV-related hashtag was $\#dailyshowgonetoofar$, when Jon Stewart called One Direction member Zayn Malik a terrorist (on the $26^{th}$) and caused a huge outrage. Sports events that occur real-time on TV also have the trending profile. There were three in this section of six three-hour intervals. First, Derek Jeter hit a walk-off homerun in the final time at bat on the Yankees, and naturally on Twitter, fans were excited. This event occurred on the $25^{th}$. The Ryder Cup is a major golf tournament that began on the $26^{th}$ and lasted through the $28^{th}$, and its beginning launched a wave of tweets. The last sports-related hashtag was the beginning of the ToyotaEMR car race that took place in India on September $26^{th}$. Finally, $\#blowthewhistle$ related to a kids cancer campaign that had lasted throughout September, which perhaps got a boost as September ended to raise some last minute funds.
 
@@ -538,10 +540,8 @@ As we can see in the figure, our algorithm detected the start of the TV show "Ho
 
 \subsection{Comparison of Naive and History-Sensitive Algorithms}
 
-Based on the approximately normal, centered distribution of the Jaccard similarities, we observe that history-sensitive performed about as well as the naive approach in terms of getting trending tweets. However, the naive algorithm uses considerably less space and time (since we only need to check the 
-$y$-unit before the current $y$-unit) to get similar results. Thus we conclude that the space efficiency of the naive approach outweighs the benefits of the history-sensitive approach for this particular task. 
-is likely superior to the history-sensitive approach. Furthermore, in our development of the history-sensitive algorithm, utilized larger errors and smoothing to perform decently, suggesting that
-our approach to evaluating the history may not be the best one for tweet-trending detection. 
+Based on the approximately normal, centered distribution of the Jaccard similarities, we observe that the history-sensitive approach performed about as well as the naive approach in terms of getting trending tweets. However, the naive algorithm uses considerably less space and time (since we only need to check the 
+$y$-unit before the current $y$-unit) to get similar results. Thus we conclude that the space efficiency of the naive approach outweighs the benefits of the history-sensitive approach for this particular task.  Furthermore, in our development of the history-sensitive algorithm, we utilized larger errors as a method of smoothing to perform decently, suggesting that our approach for evaluating the history may not be the best one for tweet-trending detection. 
 
 However, we note that from inspection the history-sensitive algorithm has more staying power than 
 the naive approach. While in the naive approach, it is rare for adjacent $y$-units to have the same
@@ -559,7 +559,7 @@ on a $15$ million hashtag dataset, with relatively large data structures to be u
 Were we to apply our algorithm to real-world real-time data, we would re-implement our code into C or another space and time efficient language. 
 
 Furthermore, for real data from all of the Twitter firehose, we would require a better hardware infrastructure dedicated to processing all the data. Ideally we would use distributed systems and would
-parallelize our code before running it. The fact that the code is broken up into disparate parts make it easier to implement in parallel.
+parallelize our code before running it. The fact that the code is broken up into disparate parts makes it easier to implement in parallel.
 
 Therefore, given some adjustments, the algorithms developed in this paper open the doors to new exploration of topic modeling the Twitter data stream.
 
@@ -572,9 +572,9 @@ With respect to the algorithms specifically, in the future we would want to adap
 Then, we would like to try adapating our algorithms to real-time data: that is, hook up our algorithms to a significant portion of the Twitter firehose, after setting up the necessary hardware to process that amount of data. In order to aid with the processing, we would also ideally use a distributed system and parallelize
 our code for better performance.
 
-We also know that an estimation the top $k$ hashtags in a given time interval could provide a topic model for tweets. It could be interesting to use the top $k$ hashtags to build a time-sensitive topic model and analyze quantities including the speed of topic change, the variety of topics, and so on.
+We also know that an estimation of the top $k$ hashtags in a given time interval could provide a topic model for tweets. It could be interesting to use the top $k$ hashtags to build a time-sensitive topic model and analyze quantities including the speed of topic change, the variety of topics, and so on.
 
-Even though not perhaps irrelevant to the specific task of identifying trending hashtags, 
+Even though it is perhaps not suited for the specific task of identifying trending hashtags, 
 the approach of the history-sensitive algorithm may be useful in other domains.
 Future work could also investigate the performance of the history-sensitive algorithm on other data streams of interest, for instance, Wikipedia edits -- our goal would be to estimate which Wikipedia topics are being edited the most at any given time interval of some length. Another interesting application of this algorithm to test would be the real-time estimatation of the hottest selling stocks on Wall Street to see if either of these settings results in a significant improvement over the naive algorithm.
 

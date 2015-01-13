@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  13 JAN 2015 09:58
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  13 JAN 2015 10:44
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -709,27 +709,18 @@ Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
 Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
 (hyperref)                removing `math shift' on input line 425.
 
-[7]
-Overfull \hbox (7.23663pt too wide) in paragraph at lines 448--450
-[]\T1/pplx/m/n/9 (-20) where the er-ror in the query is in fac-tor of $\OML/zpl
-m/m/it/9 epsilon$ \T1/pplx/m/n/9 (-20) with prob-a-bil-ity $\OT1/pplx/m/n/9 (-2
-0) 1 \OMS/zplm/m/n/9 ^^@ \OML/zplm/m/it/9 ^^N$\T1/pplx/m/n/9 (-20) . By The-o-r
-em $\OT1/pplx/m/n/9 (-20) 1$ \T1/pplx/m/n/9 (-20) in \T1/pplx/b/n/9 [[]]\T1/ppl
-x/m/n/9 (-20) ,
- []
-
-[8] <figures/jaccard_sims.jpg, id=210, 574.145pt x 438.63875pt>
+[7] [8] <figures/jaccard_sims.jpg, id=211, 574.145pt x 438.63875pt>
 File: figures/jaccard_sims.jpg Graphic file (type jpg)
 
 <use figures/jaccard_sims.jpg>
-Package pdftex.def Info: figures/jaccard_sims.jpg used on input line 508.
+Package pdftex.def Info: figures/jaccard_sims.jpg used on input line 510.
 (pdftex.def)             Requested size: 229.65393pt x 175.45238pt.
  [9 <./figures/jaccard_sims.jpg>]
-<figures/Timeline.jpg, id=219, 770.88pt x 577.15625pt>
+<figures/Timeline.jpg, id=220, 770.88pt x 577.15625pt>
 File: figures/Timeline.jpg Graphic file (type jpg)
 
 <use figures/Timeline.jpg>
-Package pdftex.def Info: figures/Timeline.jpg used on input line 528.
+Package pdftex.def Info: figures/Timeline.jpg used on input line 530.
 (pdftex.def)             Requested size: 308.34654pt x 230.8584pt.
  [10 <./figures/Timeline.jpg>]
 
@@ -757,18 +748,14 @@ Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 631.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 631.
 Package rerunfilecheck Info: File `paper.out' has not changed.
 (rerunfilecheck)             Checksum: A2CBBB308C51AFBF0D1FD4670285DEBC;2377.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 631.
  ) 
 Here is how much of TeX's memory you used:
- 11724 strings out of 493117
- 177691 string characters out of 6135433
+ 11728 strings out of 493117
+ 177722 string characters out of 6135433
  400976 words of memory out of 5000000
  14567 multiletter control sequences out of 15000+600000
- 87500 words of font info for 365 fonts, out of 8000000 for 9000
+ 87700 words of font info for 368 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  36i,15n,38p,1087b,575s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2014/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
@@ -781,10 +768,10 @@ exmf-dist/fonts/type1/public/fpl/fplrc8a.pfb></usr/local/texlive/2014/texmf-dis
 t/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2014/texmf-dist/fonts
 /type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2014/texmf-dist/fonts/type1/
 urw/palatino/uplri8a.pfb>
-Output written on paper.pdf (12 pages, 1332881 bytes).
+Output written on paper.pdf (12 pages, 1333013 bytes).
 PDF statistics:
- 286 PDF objects out of 1000 (max. 8388607)
- 258 compressed objects within 3 object streams
+ 287 PDF objects out of 1000 (max. 8388607)
+ 259 compressed objects within 3 object streams
  65 named destinations out of 1000 (max. 500000)
  55563 words of extra memory for PDF output out of 61914 (max. 10000000)
 
