@@ -7,22 +7,26 @@ when the hashtag frequencies spike, the hashtags are 'trending.' The goal of our
 
 So we hope that for a selected 3 hour interval, the hashtags that our algorithms say are trending include the ones that are trending at that time in this visualization.
 
-Note: 28 09:00-15:00
+Note: 28 09:00-15:00 nashsnewvideo usaairwayssucks
 Regarding the problem statement:
 We would like to create an online algorithm that provides a real-time estimate of the frequencies of hashtags on Twitter time series data. Since we want to be able to run this algorithm in real time, we would like for it to be space-efficient: that is, it should not be required to store a large number of hashtag counts at any given time. Ideally, the algorithm’s space complexity should be sublinear in the number of hashtags seen. Therefore, our estimate should not require the exact frequency history of hashtags in tweets.
 
 
 our approach was to explore whether or not adding historical data would improve the accuracy of trending hashtag detection.
 
-our goal was to make a real time query algorithm that USES the history (in condensed form) to help understand current time we’re remembering the past with less accuracy to save space (realistic model) in order to get good estimates of present trending
+our goal was to make a real time query algorithm that uses the history (in condensed form) to help understand current time
 
-One can easily see that some reliance on historical data is necessary since there are some hashtags that are constantly present (for example, #porn, #gamesinsight, #teamfollowback (a way to get Twitter followers fast)) these should not be counted as ’trending’, so we need to filter these out with the history. what remains is ’what is trending’
+we’re remembering the past with less accuracy to save space (realistic model) in order to get good estimates of present trending
+
+One can easily see that some reliance on historical data is necessary since there are some hashtags that are constantly present (for example, #porn, #gameinsight, #teamfollowback (a way to get Twitter followers fast)) these should not be counted as ’trending’, so we need to filter these out with the history. what remains is ’what is trending’
 
 Regarding the naive solution:
 We had two different algorithms for finding out which hashtags were trending in real time, both space efficient. The first algorithm, which we will describe as the naive algorithm, does not take into account the history and simply looks at the three hours before the current 3-hour interval to find the current trending hashtags. We believe that in order to accurately determine trending hashtags, we will need to use more of the past in order to eliminate the hashtags which are ever-present, and therefore not trending.
 
+However, we use this algorithm as a benchmark which we use to check if our second algorithm produces better results.
+
 Regarding the hokusai system explanation:
-The Hokusai structure gives frequency counts for keys over a range of time. The rough idea behind this approach is that in the distant past, we should only care about heavy-hitters, i.e. hashtags with high frequencies in order to estimate the likelihood that the hashtag is trending again. The goal of the time-aggregated Hokusai system is to store older data at decreased precision since the older data also has decreased value in the computation. The time-aggregated Hokusai system works by storing aggregate data in Count-Min sketches each with a 2^i day resolution for the past 2^i days. Each of these Count-Min sketches computes d hash functions from all strings to {0, 1, ..., m − 1}.
+The Hokusai structure gives frequency counts for keys over a range of time. The rough idea behind this approach is that in the distant past, we should only care about heavy-hitters, i.e. hashtags with high frequencies in order to estimate the likelihood that the hashtag is trending again. The goal of the time-aggregated Hokusai system is to store older data at decreased precision since the older data also has decreased value in the computation. The time-aggregated Hokusai system works by storing aggregate data in Count-Min sketches each with a 2^i day resolution for the past 2^i days.
 
 It maintains this system using the fact that Count-Min sketches are linear, so the structure can add two Count-Min sketches for ranges of 2^i days and get a single Count-Min sketch for a range of 2^(i+1) days.
 
@@ -60,4 +64,3 @@ You can see here that our algorithm did detect the popular events of the day suc
 
 Regarding Conclusions:
 We discovered that the Jacard similarity between the output produced by the naive algorithm and the history sensitive algorithm was generally high.  In our trials, the mean Jacard similarity was 0.47 with a standard deviation of 0.18.  This implies that the history sensitive algorithm still generally produces results fairly similar to the naive algorithm.
-
