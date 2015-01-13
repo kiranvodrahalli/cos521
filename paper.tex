@@ -548,6 +548,8 @@ the naive approach. While in the naive approach, it is rare for adjacent $y$-uni
 trending tweets, it is a more common occurrence in the history-sensitive approach when it makes sense (for instance, there was an event going on for the whole day: the naive algorithm would immediately reduce showing the hashtags related to that event, while the history-sensitive algorithm would not discard that
 hashtag so easily).
 
+Because Twitter limits access to its data, the datasets on which we tested our algorithms only contained 1\% of the total number of tweets.  If we were to run our algorithms on the entire dataset, we would expect that the space efficiency of the history-sensitive algorithm would improve relative to the naive algorithm because the naive algorithm would need to store 100 times more data while the history-sensitive algorithm could just reduce the size of the $y$-units to keep it nearly as space efficient.  We would not expect this to greatly affect the history-sensitive algorithm's accuracy because we could still process the same number of recent tweets to compare against the History structure.  Thus, on the full dataset, we could still reasonably expect the history-sensitive algorithm to be at least as space efficient as the naive algorithm.
+
 \subsection{Applicability to Real-Time Data}
 
 In this paper, we only simulated our algorithm running on live data, since we did not 
