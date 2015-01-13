@@ -88,7 +88,7 @@
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
 
-\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{Article Title}} % Article title
+\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{Estimating Trending Topics on Twitter with Small Subsets of the Total Data}} % Article title
 
 \author{
 \large
@@ -130,18 +130,11 @@ to determine interesting phenomena ranging from the viral spread of news to the 
 \subsection{Problem Statement} 
 
 % give clear definition of problem and motivation here
-We would like to create an online algorithm for providing a real-time estimate of the frequencies of hashtags on Twitter time series data.
+We would like to create an online algorithm that provides a real-time estimate of the frequencies of hashtags on Twitter time series data.
+Since we want to be able to run this algorithm in real time, we would like for it to be space-efficient: that is, it should not be required to store a large number of hashtag counts at any given time. Ideally, the algorithm's space complexity should be sublinear in the number of hashtags seen. 
+Therefore, our estimate should not require the exact frequency history of hashtags in tweets. 
 
-why we don't use raw frequency counts for the past hour:
-there are some hashtags that are constantly present (for example, $\#$porn, $\#$gamesinsight, $\#$teamfollowback (a way to get Twitter followers fast))
-these should not be counted as 'trending', so we need to filter these out
-with the history. what remains is 'what is trending'
-
-Furthermore, our estimate should not require the entire history of tweets 
-
-Essentially, we must estimate a probability distribution for a finite set of labels in some moving time window of fixed size. Our labels will be Twitter hashtags, and we will take the window size to be 3 hours.
-Our aim will be to approximate the k most popular Twitter hashtags in the past 3 hours in order to tell what is trending.
-
+More specifically, we will attempt to approximate the $k$ most popular Twitter hashtags in the time intervals of length $y$ in order to tell what is trending during that time period.
 The idea is that estimating the top $k$ hashtags in some time interval provides a model for the topics that are trending on Twitter in that time period.
 
 
@@ -162,17 +155,22 @@ We describe the Hokusai data structure here.
 The goal of the time-aggregated Hokusai system is to store older data at decreased precision since the older data also has decreased value in the computation.  The time-aggregated Hokusai system works by storing aggregate data in Count-Min sketches each with a $2^i$ day resolution for the past $2^i$ days.  Each of these Count-Min sketches computes $m$ hash functions from $\{0,1\}^*$ to $\{0, 1, …, n-1\}$.
 
 
-\subsection{Our Approach}
+\subsection{Our Approaches}
 
+why we don't use raw frequency counts for the past hour:
+there are some hashtags that are constantly present (for example, $\#$porn, $\#$gamesinsight, $\#$teamfollowback (a way to get Twitter followers fast))
+these should not be counted as 'trending', so we need to filter these out
+with the history. what remains is 'what is trending'
+
+Essentially, we must estimate a probability distribution for a finite set of labels in some moving time window of fixed size. Our labels will be Twitter hashtags, and we will take the window size to be 3 hours.
 
 We will store the exact counts for the present (3 hour window), and continuously update the past and present as new data streams in. 
 
+We had two different algorithms for finding out which hashtags were trending in real time, both space efficient.
+The first algorithm, which we will describe as the naive algorithm, does not take into account the history and simply looks at the three hours before the current $3$-hour interval to find the current trending hashtags. We believe that in order to accurately determine trending hashtags, we will need to use more of the past in order to eliminate the hashtags which are ever-present, and therefore not trending. 
 
-% note true anymore
-As a side note, we plan to represent the rolling 3-hour window of frequencies as a discrete approximation: we have a bucket for every second, and update the count of the bucket in every second. When the second passes, we appropriate the bucket that represents the oldest second (i.e. 180 seconds ago) for the newest second, and thus maintain a rolling window across time for exact frequency counts in the past 3 minutes. This rolling window will be denoted as the present.
 
-
-% baseline comparison description
+% not true, edit accordingly 
 The baseline comparison for our performance will be the naive version of frequency tallying -- we will keep track of the entire history of frequencies, and will use the past to inform the present probability as to whether or not a given hashtag is trending. We also plan to provide a graphic of the top k hashtags, with histogram changing in real time as the estimated frequencies change. Regarding the data, we would ideally gain access to Twitter's firehose of tweets (as only a small subset of the true data is provided for those without access). 
 %------------------------------------------------
 
@@ -307,7 +305,7 @@ This is 3.
 
 %------------------------------------------------
 
-\section{Analyzing the Algorithm}
+\section{Analyzing the History-Sensitive Algorithm}
 
 \begin{table}[h]
 \centering
@@ -332,7 +330,7 @@ This algorithm finds the k hashtags that have the maximum value of (frequency in
 The value for hashtag $x$ in the aggregate Count-Min sketch of the History data structure is within a factor of 4 of $\bar{M}(x) + \sum\limits_{i=1}^T \frac{1}{i}*$ (value for $x$ in a Count-Min sketch using the same hash functions for all hashtags occurring i days ago).
 \end{claim}
 \begin{proof}
-First, we use Theorem 4 of the Hokusai paper\footnote{http://arxiv.org/pdf/1210.4891v1.pdf} which states that ``At $t$, the sketch $M^j$ contains statistics for the period $[t - \delta, t - \delta - 2^j]$ where $\delta = t \mod 2^j$.''
+First, we use Theorem $4$ in \cc{Matusevych:2012} which states that ``At $t$, the sketch $M^j$ contains statistics for the period $[t - \delta, t - \delta - 2^j]$ where $\delta = t \mod 2^j$.''
 
 Let $b$ be the location in the aggregate Count-Min sketch containing the value returned when $x$ is queried.
 
@@ -435,32 +433,100 @@ Thus, everything requires O(nm*log(T) + x) space since s $<$ x.
 
 %------------------------------------------------
 
+\section{Testing Procedure}
+
+We downloaded the \href{https://archive.org/details/twitterstream}{September $2014$ archive of Twitter data } to serve as test data for our algorithms. We then parsed the data into (timestamp, hashtag) format
+for all thirty days worth of data. Using these files as pseudo-real-time input, we used the last week of the data as a benchmark for comparison between the naive and the history-sensitive algorithms. We divided the data into three-hour chunks, and queried for the top ten hashtags in each of the three-hour time blocks
+in the last week of the data using both algorithms. Note that the history-senstive algorithm was required to parse through the first three weeks as well in order to build its history, whereas the naive algorithm was only required to pay attention to six-hour chunks at a time, and thus never needed to look a bit beyond the scope of that week. 
+
+We used the Jaccard similarity to arrive at a similarity score between the two methods. We also investigated the hashtags that both algorithms came up with for a given $3$-hour interval, and verified
+that they were in fact trending at that time using news and Twitter media. 
+
+%------------------------------------------------
+
 \section{Results}
 
 \subsection{Performance Measurements}
 
+We use the space complexities of the data structures and the sizes of the 
+respective inputs to determine approximately how much space is used by each
+approach, and compare them. 
+
 \subsubsection{Naive Algorithm}
 
-space measurements (running on one month's worth)
+Space measurements (running on one week's worth of hashtags) (estimate 6 hours worth of hashtags)
 
-time (running over one month): a few hours
+Time (running over one week): $\sim 15$ minutes
 
-\subsubsection{Space-Efficient Algorithm}
+\subsubsection{History-Sensitive Algorithm}
 
-space measurements (running on one month's worth)
+(we had to build a history over the first three weeks of the month
+ in order to determine the History data structure's values for the week we ran
+ the algorithm over)
 
-time (running over one month): a few hours
+Space measurements (running on one week's worth of hashtags):
+
+Time (running over one week): $2 - 3$ hours
 
 \subsection{Are the Algorithm Outputs Actually Trending?}
 
+\subsubsection{The Intersection Distribution}
+
+First, we see how many hashtags were marked as trending 
+by both the naive and history-sensitive algorithms in the same time slots.
+For each $3$-hour interval, we calculate the Jaccard Similarity, a value
+in the range $[0, 1]$, given by 
+
+\begin{equation}
+\label{eq:jaccard}
+J(A, B) = \frac{|A \cap B|}{|A \cup B|}
+\end{equation}
+
+\noindent where $A$ and $B$ are the sets of top $10$ hashtags for a given $3$-hour interval
+for each algorithm. 
+We then calculate the mean and standard deviation of the Jaccard similarity
+over the $56$ different $3$-hour intervals of the last week of September $2014$.
+
+This value gives us a metric for understanding how similarly the two algorithms performed.
+
+We plot it below in the histogram shown in \aref{fig:jaccard_sims}. The $x$-axis is the Jaccard similarity, and the $y$-axis is the count. The mean was $0.47$, and the standard Deviation was $0.18$.
+
+\begin{figure}
+\centering
+\includegraphics[scale = .4]{jaccard_sims}
+\caption{Distribution of Jaccard Similarities}
+\label{fig:jaccard_sims}
+\end{figure}
+
+\subsubsection{History-Sensitive Algorithm}
+
+In \aref{fig:news_vis}, we have superimposed pictures from 
+news articles that the tweets describe on a time axis, as
+the hashtag referencing the article starts trending. 
+We checked that the news was released (via Yahoo! News and Twitter)
+at around the time our algorithm says the hashtag relating to the news
+begins to trend. 
+
+\begin{figure} 
+\centering
+\includegraphics[scale = .4]{Timeline}
+\caption{News Visualization of Trending Tweets}
+\label{fig:news_vis}
+\end{figure}
+
 \subsubsection{Naive Algorithm}
 
-\subsubsection{Space-Efficient Algorithm}
-
+We consider a few snapshots of duration $3$ hours each during
+the last week of the month. 
 
 %------------------------------------------------
 
 \section{Discussion}
+
+\subsection{Comparison of Naive and History-Sensitive Algorithms}
+
+
+\subsection{Applicability to Real-Time Data}
 
 do well to get month's worth of data in a few hours (2-3)
 
@@ -477,11 +543,20 @@ seems reasonable if we have proper data storage setup.
 %------------------------------------------------
 \section{Future Work} \label{sec:Future Work}
 
-Given enough time, another data stream of interest could be Wikipedia edits -- our goal would be to estimate which Wikipedia topics are being edited the most at any given time interval of 3 hours (though we could shrink this to smaller times). As a final sidenote, another application of this algorithm/ data structure would be to estimate the hottest selling stocks on Wall St. Of course this would require a firehose data stream to Wall St., and as that is not as easily obtainable as say, Twitter data, we only mention it as another useful application.
+With respect to the algorithms specifically, in the future we would want to adapt our approach to the history-sensitive algorithm and play with the parameters a bit more. We would also like to try different kernel functions to see how they performed. 
 
-\section{Appendix I: Code} \label{sec:Appendix_code}
+Then, we would like to try adapating our algorithms to real-time data: that is, hook up our algorithms to a significant portion of the Twitter firehose, after setting up the necessary hardware to process that amount of data. In order to aid with the processing, we would also ideally use a distributed system and parallelize
+our code for better performance.
 
-We provide a link to \href{https://github.com/kiranvodrahalli/cos521/}{all our code}, as well as to an online hosting of the \href{http://princeton.edu/~awlee/trend}{frequency visualization}.
+We also know that an estimation the top $k$ hashtags in a given time interval could provide a topic model for tweets. It could be interesting to use the top $k$ hashtags to build a time-sensitive topic model and analyze quantities including the speed of topic change, the variety of topics, and so on.
+
+Even though not perhaps irrelevant to the specific task of identifying trending hashtags, 
+the approach of the history-sensitive algorithm may be useful in other domains.
+Future work could also investigate the performance of the history-sensitive algorithm on other data streams of interest, for instance, Wikipedia edits -- our goal would be to estimate which Wikipedia topics are being edited the most at any given time interval of some length. Another interesting application of this algorithm to test would be the real-time estimatation of the hottest selling stocks on Wall Street to see if either of these settings results in a significant improvement over the naive algorithm.
+
+\section{Appendix I: Code and Visualizations} \label{sec:Appendix_code_viz}
+
+We provide a link to \href{https://github.com/kiranvodrahalli/cos521/}{all our code}, as well as to an online hosting of the \href{http://www.princeton.edu/~awlee/trends.html}{frequency visualization}.
 
 
 %----------------------------------------------------------------------------------------
